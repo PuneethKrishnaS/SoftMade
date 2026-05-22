@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, StudentGroup, Student, Project, Ticket, Payment
+from .models import User, Student, Project, Ticket, Payment
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -7,36 +7,15 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role']
         read_only_fields = ['id']
 
-class StudentGroupSerializer(serializers.ModelSerializer):
-    members = serializers.SerializerMethodField()
-
-    class Meta:
-        model = StudentGroup
-        fields = ['id', 'name', 'college_name', 'department', 'semester', 'created_at', 'members']
-        
-    def get_members(self, obj):
-        # Prevent circular imports or deep nesting by returning a simple dict
-        return [
-            {
-                "id": member.id,
-                "usn": member.usn,
-                "phone": member.phone,
-                "name": member.user.get_full_name() or member.user.username,
-                "email": member.user.email
-            }
-            for member in obj.members.all()
-        ]
-
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    group = StudentGroupSerializer(read_only=True)
     
     class Meta:
         model = Student
         fields = '__all__'
 
 class ProjectSerializer(serializers.ModelSerializer):
-    group = StudentGroupSerializer(read_only=True)
+    students = StudentSerializer(many=True, read_only=True)
     assigned_developer = UserSerializer(read_only=True)
     tickets = serializers.SerializerMethodField()
     payments = serializers.SerializerMethodField()
@@ -80,6 +59,8 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PaymentSerializer(serializers.ModelSerializer):
+    project_title = serializers.CharField(source='project.title', read_only=True)
+    
     class Meta:
         model = Payment
         fields = '__all__'
@@ -106,19 +87,13 @@ class CreateStudentLeaderSerializer(serializers.Serializer):
             role='STUDENT'
         )
 
-        # 2. Create the Group
-        group = StudentGroup.objects.create(
-            name=f"Group_{validated_data['usn']}",
-            college_name=validated_data['college_name'],
-            department=validated_data.get('branch', ''),
-            semester=validated_data.get('semester', 1)
-        )
-
-        # 3. Create the Student Profile (Leader)
+        # 2. Create the Student Profile (Leader)
         student = Student.objects.create(
             user=user,
             usn=validated_data['usn'],
-            group=group,
+            college_name=validated_data['college_name'],
+            department=validated_data.get('branch', ''),
+            semester=validated_data.get('semester', 1),
             phone=validated_data['contact_number']
         )
         return student
@@ -128,13 +103,11 @@ class CreateProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['title', 'description', 'technology', 'category', 'status', 'leader_usn', 'start_date', 'deadline', 'github_repo']
+        fields = ['title', 'description', 'technology', 'category', 'status', 'leader_usn', 'assigned_developer', 'start_date', 'deadline', 'github_repo', 'total_price', 'advance_payment']
 
     def validate_leader_usn(self, value):
         try:
             student = Student.objects.get(usn=value)
-            if not student.group:
-                raise serializers.ValidationError("Student does not belong to a group.")
             return value
         except Student.DoesNotExist:
             raise serializers.ValidationError("Student with this USN does not exist.")
@@ -142,5 +115,6 @@ class CreateProjectSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         leader_usn = validated_data.pop('leader_usn')
         student = Student.objects.get(usn=leader_usn)
-        validated_data['group'] = student.group
-        return super().create(validated_data)
+        project = super().create(validated_data)
+        project.students.add(student)
+        return project

@@ -1,4 +1,5 @@
 import os
+import base64
 from github import Github, GithubException
 
 def get_github_client():
@@ -28,28 +29,45 @@ def get_project_releases(repo_name):
     except GithubException:
         return []
 
-def get_project_documents(repo_name, path="docs"):
+def get_project_documents(repo_name):
     client = get_github_client()
     if not client or not repo_name:
         return []
     
     try:
         repo = client.get_repo(repo_name)
-        contents = repo.get_contents(path)
+        documents = []
         
-        # If it's a single file, make it a list
-        if not isinstance(contents, list):
-            contents = [contents]
-            
+        # Get all root contents
+        try:
+            root_contents = repo.get_contents("")
+            if not isinstance(root_contents, list): root_contents = [root_contents]
+            documents.extend(root_contents)
+        except GithubException:
+            pass
+
         return [
             {
                 "name": c.name,
                 "path": c.path,
+                "type": c.type, # "dir" or "file"
                 "download_url": c.download_url,
                 "size": c.size
             }
-            for c in contents if c.type == "file"
+            for c in documents
         ]
     except GithubException:
-        # Folder might not exist yet
         return []
+
+def get_project_readme(repo_name):
+    client = get_github_client()
+    if not client or not repo_name:
+        return None
+        
+    try:
+        repo = client.get_repo(repo_name)
+        readme = repo.get_readme()
+        # Decode the base64 content
+        return base64.b64decode(readme.content).decode('utf-8')
+    except GithubException:
+        return None

@@ -7,7 +7,6 @@ import { useAuthStore } from "../store/auth";
 
 const SIDEBAR_ITEMS = [
   { name: "Overview", path: "/dashboard", icon: LayoutDashboard },
-  { name: "Tracking", path: "/dashboard/tracking", icon: Activity },
   { name: "Downloads", path: "/dashboard/downloads", icon: Download },
   { name: "Tickets", path: "/dashboard/tickets", icon: Ticket },
   { name: "Payments", path: "/dashboard/payments", icon: CreditCard },
@@ -23,6 +22,7 @@ export default function DashboardLayout() {
   const location = useLocation();
   const user = useAuthStore(state => state.user);
   const [activeProject, setActiveProject] = useState<any>(null);
+  const [projects, setProjects] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -32,6 +32,7 @@ export default function DashboardLayout() {
       try {
         const res = await api.get("projects/");
         if (res.data && res.data.length > 0) {
+          setProjects(res.data);
           setActiveProject(res.data[0]);
         }
       } catch (err) {
@@ -92,27 +93,33 @@ export default function DashboardLayout() {
                 transition={{ duration: 0.15 }}
                 className="absolute top-16 left-4 right-4 mt-1 bg-popover text-popover-foreground border shadow-lg rounded-xl overflow-hidden z-50"
               >
-                <div className="p-1">
-                  {activeProject && (
-                    <button
-                      onClick={() => setIsDropdownOpen(false)}
-                      className="w-full flex items-center justify-between px-2 py-2 text-sm rounded-lg hover:bg-secondary transition-colors text-left"
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <div className="w-6 h-6 rounded-md bg-primary/10 text-primary flex items-center justify-center font-medium text-xs shrink-0">
-                           {activeProject.title.substring(0, 2).toUpperCase()}
+                <div className="p-1 max-h-64 overflow-y-auto">
+                  {projects.length > 0 ? (
+                    projects.map((project) => (
+                      <button
+                        key={project.id}
+                        onClick={() => {
+                          setActiveProject(project);
+                          setIsDropdownOpen(false);
+                        }}
+                        className="w-full flex items-center justify-between px-2 py-2 text-sm rounded-lg hover:bg-secondary transition-colors text-left"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <div className="w-6 h-6 rounded-md bg-primary/10 text-primary flex items-center justify-center font-medium text-xs shrink-0">
+                             {project.title.substring(0, 2).toUpperCase()}
+                          </div>
+                          <span className="truncate">{project.title}</span>
                         </div>
-                        <span className="truncate">{activeProject.title}</span>
-                      </div>
-                      <Check className="w-4 h-4 text-primary" />
-                    </button>
+                        {activeProject?.id === project.id && (
+                          <Check className="w-4 h-4 text-primary shrink-0" />
+                        )}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="px-2 py-2 text-sm text-muted-foreground text-center">
+                      No projects found.
+                    </div>
                   )}
-                </div>
-                <div className="border-t p-1">
-                   <button className="w-full flex items-center gap-2 px-2 py-2 text-sm rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground">
-                      <PlusCircle className="w-4 h-4" />
-                      <span>Create New Group</span>
-                   </button>
                 </div>
               </motion.div>
             )}

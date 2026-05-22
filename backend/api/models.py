@@ -26,20 +26,12 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
-class StudentGroup(models.Model):
-    name = models.CharField(max_length=255)
-    college_name = models.CharField(max_length=255)
-    department = models.CharField(max_length=255)
-    semester = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.name
-
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
     usn = models.CharField(max_length=50, unique=True)
-    group = models.ForeignKey(StudentGroup, on_delete=models.SET_NULL, null=True, blank=True, related_name='members')
+    college_name = models.CharField(max_length=255, default='')
+    department = models.CharField(max_length=255, default='')
+    semester = models.IntegerField(default=1)
     phone = models.CharField(max_length=20, blank=True)
 
     def __str__(self):
@@ -64,12 +56,14 @@ class Project(models.Model):
     technology = models.CharField(max_length=255)
     category = models.CharField(max_length=100)
     github_repo = models.CharField(max_length=255, blank=True, null=True, help_text="Format: owner/repo (e.g. PuneethKrishnaS/SoftMade)")
-    group = models.OneToOneField(StudentGroup, on_delete=models.SET_NULL, null=True, blank=True, related_name='project')
+    students = models.ManyToManyField(Student, related_name='projects', blank=True)
     assigned_developer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_projects')
     start_date = models.DateField(null=True, blank=True)
     deadline = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=50, choices=STAGE_CHOICES, default='REQUIREMENT')
     progress_percentage = models.IntegerField(default=0)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    advance_payment = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def __str__(self):
         return self.title
@@ -108,7 +102,7 @@ class Payment(models.Model):
     )
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='payments')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True, null=True, default='Payment')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     due_date = models.DateField(null=True, blank=True)
     paid_date = models.DateField(null=True, blank=True)

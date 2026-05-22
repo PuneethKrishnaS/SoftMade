@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, MoreHorizontal, Mail, Phone, Loader2 } from "lucide-react";
+import { Search, Plus, Trash2, Mail, Phone, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../lib/api";
 
@@ -25,8 +25,19 @@ export default function Students() {
     fetchStudents();
   }, []);
 
+  const handleDelete = async (usn: string) => {
+    if (!window.confirm(`Are you sure you want to delete student ${usn}?`)) return;
+    try {
+      await api.delete(`students/${usn}/`);
+      setStudents(students.filter(s => s.usn !== usn));
+    } catch (err) {
+      console.error("Failed to delete student", err);
+      alert("Failed to delete student.");
+    }
+  };
+
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-8xl mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h2 className="text-3xl font-bold tracking-tight">Student Management</h2>
@@ -96,8 +107,8 @@ export default function Students() {
                           </Badge>
                        </td>
                        <td className="px-6 py-4 text-right">
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                             <MoreHorizontal className="w-4 h-4" />
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(student.usn)}>
+                             <Trash2 className="w-4 h-4" />
                           </Button>
                        </td>
                     </tr>
@@ -108,10 +119,6 @@ export default function Students() {
         </div>
         <div className="p-4 border-t bg-secondary/10 flex items-center justify-between text-sm text-muted-foreground">
            <span>Showing {students.length} entries</span>
-           <div className="flex gap-2">
-             <Button variant="outline" size="sm" className="rounded-lg h-8" disabled>Previous</Button>
-             <Button variant="outline" size="sm" className="rounded-lg h-8" disabled>Next</Button>
-           </div>
         </div>
       </Card>
     </div>

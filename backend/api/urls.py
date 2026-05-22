@@ -3,20 +3,20 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
     StudentViewSet,
-    StudentGroupViewSet,
     ProjectViewSet,
     TicketViewSet,
     PaymentViewSet,
     RegisterStudentLeaderView,
-    CurrentUserView
+    CurrentUserView,
+    UserViewSet
 )
 
 router = DefaultRouter()
 router.register(r'students', StudentViewSet, basename='student')
-router.register(r'groups', StudentGroupViewSet, basename='group')
 router.register(r'projects', ProjectViewSet, basename='project')
 router.register(r'tickets', TicketViewSet, basename='ticket')
 router.register(r'payments', PaymentViewSet, basename='payment')
+router.register(r'users', UserViewSet, basename='user')
 
 urlpatterns = [
     # Auth Endpoints

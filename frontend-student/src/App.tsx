@@ -4,7 +4,6 @@ import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Overview from "./pages/dashboard/Overview";
-import Tracking from "./pages/dashboard/Tracking";
 import Downloads from "./pages/dashboard/Downloads";
 import Tickets from "./pages/dashboard/Tickets";
 import Payments from "./pages/dashboard/Payments";
@@ -27,7 +26,6 @@ function App() {
         {/* Dashboard Routes */}
         <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<Overview />} />
-          <Route path="tracking" element={<Tracking />} />
           <Route path="downloads" element={<Downloads />} />
           <Route path="tickets" element={<Tickets />} />
           <Route path="payments" element={<Payments />} />

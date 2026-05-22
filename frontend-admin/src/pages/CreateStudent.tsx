@@ -44,7 +44,7 @@ export default function CreateStudent() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
       <div className="flex items-center gap-4">
         <Link to="/admin/students">
           <Button variant="ghost" size="icon" className="rounded-full">

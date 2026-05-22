@@ -5,12 +5,11 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from .github_services import get_project_releases, get_project_documents
+from .github_services import get_project_releases, get_project_documents, get_project_readme
 
-from .models import StudentGroup, Student, Project, Ticket, Payment
+from .models import Student, Project, Ticket, Payment
 from .serializers import (
     UserSerializer,
-    StudentGroupSerializer,
     StudentSerializer,
     ProjectSerializer,
     TicketSerializer,
@@ -37,13 +36,8 @@ class RegisterStudentLeaderView(generics.CreateAPIView):
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
 class StudentViewSet(viewsets.ModelViewSet):
-    queryset = Student.objects.all().select_related('user', 'group')
+    queryset = Student.objects.all().select_related('user')
     serializer_class = StudentSerializer
-    permission_classes = [AllowAny]
-
-class StudentGroupViewSet(viewsets.ModelViewSet):
-    queryset = StudentGroup.objects.all()
-    serializer_class = StudentGroupSerializer
     permission_classes = [AllowAny]
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -54,11 +48,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user.is_authenticated and user.role == 'STUDENT':
             try:
-                group_id = user.student_profile.group_id
-                return Project.objects.filter(group_id=group_id).select_related('group', 'assigned_developer')
+                student = user.student_profile
+                return Project.objects.filter(students=student).select_related('assigned_developer').prefetch_related('students')
             except Student.DoesNotExist:
                 return Project.objects.none()
-        return Project.objects.all().select_related('group', 'assigned_developer')
+        return Project.objects.all().select_related('assigned_developer').prefetch_related('students')
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -82,6 +76,31 @@ class ProjectViewSet(viewsets.ModelViewSet):
         
         docs = get_project_documents(project.github_repo)
         return Response(docs)
+
+    @action(detail=True, methods=['get'])
+    def github_readme(self, request, pk=None):
+        project = self.get_object()
+        if not project.github_repo:
+            return Response({"error": "No GitHub repository linked to this project."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        readme = get_project_readme(project.github_repo)
+        if readme is None:
+            return Response({"error": "README not found."}, status=status.HTTP_404_NOT_FOUND)
+            
+        return Response({"content": readme})
+
+    @action(detail=True, methods=['post'])
+    def add_student(self, request, pk=None):
+        project = self.get_object()
+        usn = request.data.get('usn')
+        if not usn:
+            return Response({"error": "USN is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            student = Student.objects.get(usn=usn)
+            project.students.add(student)
+            return Response({"status": "Student added successfully", "student": StudentSerializer(student).data})
+        except Student.DoesNotExist:
+            return Response({"error": f"Student with USN {usn} not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all().select_related('student', 'project')
@@ -108,4 +127,9 @@ class CurrentUserView(APIView):
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
+    permission_classes = [AllowAny]
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
     permission_classes = [AllowAny]

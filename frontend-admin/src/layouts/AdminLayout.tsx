@@ -7,7 +7,6 @@ const SIDEBAR_ITEMS = [
   { name: "Students", path: "/admin/students", icon: Users },
   { name: "Projects", path: "/admin/projects", icon: FolderKanban },
   { name: "Tickets", path: "/admin/tickets", icon: Ticket },
-  { name: "Uploads", path: "/admin/uploads", icon: UploadCloud },
   { name: "Payments", path: "/admin/payments", icon: CreditCard },
   { name: "Analytics", path: "/admin/analytics", icon: BarChart3 },
 ];

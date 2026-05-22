@@ -5,22 +5,52 @@ import { Badge } from "@/components/ui/badge";
 import api from "../lib/api";
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({ students: 0, projects: 0, tickets: 0 });
+  const [stats, setStats] = useState({ students: 0, projects: 0, tickets: 0, revenue: 0 });
+  const [recentProjects, setRecentProjects] = useState<any[]>([]);
+  const [newStudents, setNewStudents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [studentsRes, projectsRes, ticketsRes] = await Promise.all([
+        const [studentsRes, projectsRes, ticketsRes, paymentsRes] = await Promise.all([
           api.get("students/"),
           api.get("projects/"),
-          api.get("tickets/")
+          api.get("tickets/"),
+          api.get("payments/")
         ]);
+        
+        const projects = projectsRes.data;
+        const payments = paymentsRes.data;
+        const students = studentsRes.data;
+
+        // Calculate Revenue
+        const totalPayments = payments.filter((p:any) => p.status === 'PAID').reduce((sum:number, p:any) => sum + parseFloat(p.amount), 0);
+        const totalAdvance = projects.reduce((sum:number, p:any) => sum + parseFloat(p.advance_payment || 0), 0);
+        const totalRevenue = totalPayments + totalAdvance;
+
         setStats({
-          students: studentsRes.data.length,
-          projects: projectsRes.data.length,
-          tickets: ticketsRes.data.length
+          students: students.length,
+          projects: projects.length,
+          tickets: ticketsRes.data.length,
+          revenue: totalRevenue
         });
+
+        // Set Recent Projects (last 5)
+        setRecentProjects(projects.slice(-5).reverse().map((p:any) => ({
+          title: p.title,
+          action: `Currently in ${p.status.replace('_', ' ')} phase`,
+          time: "Recently active",
+          alert: p.status === 'DELAYED'
+        })));
+
+        // Set New Students (last 5)
+        setNewStudents(students.slice(-5).reverse().map((s:any) => ({
+          name: s.user?.first_name || s.user?.username || 'Unknown',
+          group: s.department || 'General',
+          college: s.college_name || 'N/A'
+        })));
+
       } catch (err) {
         console.error("Failed to fetch dashboard stats", err);
       } finally {
@@ -31,7 +61,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-6xl mx-auto">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-8xl mx-auto">
       <div className="flex flex-col gap-1">
         <h2 className="text-3xl font-bold tracking-tight">Overview</h2>
         <p className="text-muted-foreground">Monitor platform activity, revenue, and active projects.</p>
@@ -90,8 +120,12 @@ export default function Dashboard() {
             <IndianRupee className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">₹0</div>
-            <p className="text-xs text-muted-foreground mt-1 flex items-center">Awaiting payments</p>
+            {isLoading ? <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /> : (
+              <>
+                <div className="text-3xl font-bold">₹{stats.revenue.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground mt-1 flex items-center">Total collected</p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -107,11 +141,11 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="p-0">
                <div className="divide-y divide-border/40">
-                  {[
-                    { title: "IoT Smart Home", action: "Milestone updated to Database Integration", time: "2 hours ago" },
-                    { title: "AI Medical Bot", action: "Synopsis rejected by Guide", time: "5 hours ago", alert: true },
-                    { title: "E-Commerce App", action: "Final Payment Received", time: "1 day ago" }
-                  ].map((act, i) => (
+                  {isLoading ? (
+                    <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+                  ) : recentProjects.length === 0 ? (
+                    <div className="p-8 text-center text-muted-foreground text-sm">No active projects found.</div>
+                  ) : recentProjects.map((act, i) => (
                     <div key={i} className="p-4 hover:bg-secondary/20 transition-colors flex justify-between items-center">
                        <div>
                          <p className="font-medium text-sm">{act.title}</p>
@@ -134,14 +168,14 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="p-0">
                <div className="divide-y divide-border/40">
-                  {[
-                    { name: "Rahul Sharma", group: "Team Alpha", college: "RVCE" },
-                    { name: "Sneha Reddy", group: "Code Crafters", college: "BMSCE" },
-                    { name: "Vikram Singh", group: "Data Miners", college: "PESU" }
-                  ].map((student, i) => (
+                  {isLoading ? (
+                    <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+                  ) : newStudents.length === 0 ? (
+                    <div className="p-8 text-center text-muted-foreground text-sm">No students registered yet.</div>
+                  ) : newStudents.map((student, i) => (
                     <div key={i} className="p-4 hover:bg-secondary/20 transition-colors flex justify-between items-center">
                        <div className="flex items-center gap-3">
-                         <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
+                         <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold uppercase">
                            {student.name.charAt(0)}
                          </div>
                          <div>
