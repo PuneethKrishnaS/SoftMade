@@ -83,9 +83,11 @@ export default function Projects() {
                      </div>
                   </div>
                   <div className="flex gap-2 pt-2 border-t border-border/40">
-                     <Button variant="ghost" size="sm" className="flex-1 rounded-lg gap-2 h-8 text-xs bg-secondary/30 hover:bg-secondary/60">
-                        <FileText className="w-3.5 h-3.5" /> Details
-                     </Button>
+                     <Link to={`/admin/projects/${project.id}`} className="flex-1">
+                       <Button variant="ghost" size="sm" className="w-full rounded-lg gap-2 h-8 text-xs bg-secondary/30 hover:bg-secondary/60">
+                          <FileText className="w-3.5 h-3.5" /> Details
+                       </Button>
+                     </Link>
                      <Button variant="ghost" size="sm" className="flex-1 rounded-lg gap-2 h-8 text-xs bg-secondary/30 hover:bg-secondary/60">
                         <UploadCloud className="w-3.5 h-3.5" /> Upload File
                      </Button>

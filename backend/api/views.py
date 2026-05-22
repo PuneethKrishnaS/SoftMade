@@ -2,7 +2,10 @@ from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
+from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from .github_services import get_project_releases, get_project_documents
 
 from .models import StudentGroup, Student, Project, Ticket
 from .serializers import (
@@ -60,6 +63,24 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return CreateProjectSerializer
         return ProjectSerializer
+        
+    @action(detail=True, methods=['get'])
+    def github_releases(self, request, pk=None):
+        project = self.get_object()
+        if not project.github_repo:
+            return Response({"error": "No GitHub repository linked to this project."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        releases = get_project_releases(project.github_repo)
+        return Response(releases)
+        
+    @action(detail=True, methods=['get'])
+    def github_documents(self, request, pk=None):
+        project = self.get_object()
+        if not project.github_repo:
+            return Response({"error": "No GitHub repository linked to this project."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        docs = get_project_documents(project.github_repo)
+        return Response(docs)
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all().select_related('student', 'project')

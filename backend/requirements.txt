@@ -10,3 +10,4 @@ tzdata==2026.2
 dj-database-url==2.2.0
 python-dotenv==1.0.1
 whitenoise==6.7.0
+PyGithub==2.3.0

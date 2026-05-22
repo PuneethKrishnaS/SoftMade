@@ -6,6 +6,7 @@ import Students from "./pages/Students";
 import CreateStudent from "./pages/CreateStudent";
 import Projects from "./pages/Projects";
 import CreateProject from "./pages/CreateProject";
+import ProjectDetails from "./pages/ProjectDetails";
 import Tickets from "./pages/Tickets";
 import Login from "./pages/Login";
 
@@ -29,6 +30,7 @@ function App() {
           <Route path="students/create" element={<CreateStudent />} />
           <Route path="projects" element={<Projects />} />
           <Route path="projects/create" element={<CreateProject />} />
+          <Route path="projects/:id" element={<ProjectDetails />} />
           <Route path="tickets" element={<Tickets />} />
           <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
         </Route>

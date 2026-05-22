@@ -63,6 +63,7 @@ class Project(models.Model):
     description = models.TextField()
     technology = models.CharField(max_length=255)
     category = models.CharField(max_length=100)
+    github_repo = models.CharField(max_length=255, blank=True, null=True, help_text="Format: owner/repo (e.g. PuneethKrishnaS/SoftMade)")
     group = models.OneToOneField(StudentGroup, on_delete=models.SET_NULL, null=True, blank=True, related_name='project')
     assigned_developer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_projects')
     start_date = models.DateField(null=True, blank=True)

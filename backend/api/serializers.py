@@ -80,7 +80,7 @@ class CreateProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['title', 'description', 'technology', 'category', 'status', 'leader_usn', 'start_date', 'deadline']
+        fields = ['title', 'description', 'technology', 'category', 'status', 'leader_usn', 'start_date', 'deadline', 'github_repo']
 
     def validate_leader_usn(self, value):
         try:

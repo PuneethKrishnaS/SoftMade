@@ -18,6 +18,7 @@ export default function CreateProject() {
     leader_usn: "",
     deadline: "",
     status: "REQUIREMENT",
+    github_repo: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -93,6 +94,11 @@ export default function CreateProject() {
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Tech Stack</label>
                   <Input name="technology" value={formData.technology} onChange={handleChange} placeholder="e.g. Python, React, PostgreSQL" />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">GitHub Repository</label>
+                  <Input name="github_repo" value={formData.github_repo} onChange={handleChange} placeholder="e.g. PuneethKrishnaS/SoftMade" />
                 </div>
               </div>
             </CardContent>
