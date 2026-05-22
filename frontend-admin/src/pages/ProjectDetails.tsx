@@ -16,12 +16,14 @@ export default function ProjectDetails() {
    const [documents, setDocuments] = useState<any[]>([]);
    const [isLoading, setIsLoading] = useState(true);
    const [isGithubLoading, setIsGithubLoading] = useState(false);
-   
+
    // Edit Form State
    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
    const [isSaving, setIsSaving] = useState(false);
    const [editData, setEditData] = useState<any>({});
-   
+   const [groups, setGroups] = useState<any[]>([]);
+   const [developers, setDevelopers] = useState<any[]>([]);
+
    // Payment Form State
    const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
    const [isPaymentSaving, setIsPaymentSaving] = useState(false);
@@ -32,16 +34,23 @@ export default function ProjectDetails() {
          const res = await api.get(`projects/${id}/`);
          setProject(res.data);
          setEditData({
-           title: res.data.title,
-           description: res.data.description,
-           category: res.data.category,
-           technology: res.data.technology,
-           status: res.data.status,
-           start_date: res.data.start_date || '',
-           deadline: res.data.deadline || '',
-           github_repo: res.data.github_repo || '',
-           progress_percentage: res.data.progress_percentage || 0,
+            title: res.data.title,
+            description: res.data.description,
+            category: res.data.category,
+            technology: res.data.technology,
+            status: res.data.status,
+            start_date: res.data.start_date || '',
+            deadline: res.data.deadline || '',
+            github_repo: res.data.github_repo || '',
+            progress_percentage: res.data.progress_percentage || 0,
+            group_id: res.data.group?.id || '',
+            assigned_developer_id: res.data.assigned_developer?.id || '',
          });
+
+         // Fetch related options for Edit form in background
+         api.get('groups/').then(g => setGroups(g.data)).catch(console.error);
+         // Assuming backend has an endpoint for users or we can just leave it as text for now if no endpoint exists, but let's try fetching users
+         api.get('students/').then(d => setDevelopers(d.data)).catch(console.error); // We might need a users endpoint for developers.
 
          if (res.data.github_repo) {
             setIsGithubLoading(true);
@@ -73,26 +82,42 @@ export default function ProjectDetails() {
       e.preventDefault();
       setIsSaving(true);
       try {
-         await api.patch(`projects/${id}/`, editData);
+         // Sanitize data: empty strings for dates must be null for Django
+         const payload = {
+            ...editData,
+            start_date: editData.start_date || null,
+            deadline: editData.deadline || null,
+            group: editData.group_id || null,
+            assigned_developer: editData.assigned_developer_id || null,
+         };
+         await api.patch(`projects/${id}/`, payload);
          setIsEditDialogOpen(false);
          await fetchProject();
-      } catch (err) {
-         console.error("Failed to update project", err);
+      } catch (err: any) {
+         console.error("Failed to update project", err.response?.data || err.message);
+         alert("Failed to update project: " + JSON.stringify(err.response?.data || {}));
       } finally {
          setIsSaving(false);
       }
    };
-   
+
    const handlePaymentSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       setIsPaymentSaving(true);
       try {
-         await api.post(`payments/`, { ...paymentData, project: id });
+         const payload = {
+            ...paymentData,
+            project: id,
+            due_date: paymentData.due_date || null,
+            paid_date: paymentData.paid_date || null,
+         };
+         await api.post(`payments/`, payload);
          setIsPaymentDialogOpen(false);
-         setPaymentData({ amount: '', description: '', status: 'PENDING', due_date: '' });
+         setPaymentData({ amount: '', description: '', status: 'PENDING', due_date: '', paid_date: '' });
          await fetchProject();
-      } catch (err) {
-         console.error("Failed to create payment", err);
+      } catch (err: any) {
+         console.error("Failed to create payment", err.response?.data || err.message);
+         alert("Failed to create payment: " + JSON.stringify(err.response?.data || {}));
       } finally {
          setIsPaymentSaving(false);
       }
@@ -109,8 +134,8 @@ export default function ProjectDetails() {
    if (!project) return <div>Project not found</div>;
 
    return (
-      <div className="max-w-4xl mx-auto py-12 px-4 animate-in fade-in duration-300 font-sans text-foreground">
-         
+      <div className="max-w-7xl mx-auto py-12 px-4 md:px-8 animate-in fade-in duration-300 font-sans text-foreground">
+
          {/* Breadcrumb */}
          <div className="mb-6">
             <Link to="/admin/projects" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -125,7 +150,7 @@ export default function ProjectDetails() {
                   <h1 className="text-4xl font-bold tracking-tight mb-3 flex items-center gap-3">
                      <FileText className="w-8 h-8 text-muted-foreground" />
                      {project.title}
-                     
+
                      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                         <DialogTrigger asChild>
                            <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 text-muted-foreground hover:text-foreground">
@@ -140,27 +165,27 @@ export default function ProjectDetails() {
                               <div className="grid grid-cols-2 gap-4">
                                  <div className="space-y-2 col-span-2">
                                     <label className="text-sm font-medium">Project Title</label>
-                                    <Input value={editData.title} onChange={e => setEditData({...editData, title: e.target.value})} required className="rounded-md" />
+                                    <Input value={editData.title} onChange={e => setEditData({ ...editData, title: e.target.value })} required className="rounded-md" />
                                  </div>
                                  <div className="space-y-2 col-span-2">
                                     <label className="text-sm font-medium">Description</label>
-                                    <textarea 
+                                    <textarea
                                        className="w-full min-h-[100px] p-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
-                                       value={editData.description} 
-                                       onChange={e => setEditData({...editData, description: e.target.value})} 
+                                       value={editData.description}
+                                       onChange={e => setEditData({ ...editData, description: e.target.value })}
                                     />
                                  </div>
                                  <div className="space-y-2">
                                     <label className="text-sm font-medium">Category</label>
-                                    <Input value={editData.category} onChange={e => setEditData({...editData, category: e.target.value})} required className="rounded-md" />
+                                    <Input value={editData.category} onChange={e => setEditData({ ...editData, category: e.target.value })} required className="rounded-md" />
                                  </div>
                                  <div className="space-y-2">
                                     <label className="text-sm font-medium">Tech Stack</label>
-                                    <Input value={editData.technology} onChange={e => setEditData({...editData, technology: e.target.value})} className="rounded-md" />
+                                    <Input value={editData.technology} onChange={e => setEditData({ ...editData, technology: e.target.value })} className="rounded-md" />
                                  </div>
                                  <div className="space-y-2">
                                     <label className="text-sm font-medium">Status</label>
-                                    <Select value={editData.status} onValueChange={(v) => setEditData({...editData, status: v})}>
+                                    <Select value={editData.status} onValueChange={(v) => setEditData({ ...editData, status: v })}>
                                        <SelectTrigger className="rounded-md"><SelectValue /></SelectTrigger>
                                        <SelectContent>
                                           <SelectItem value="REQUIREMENT">Requirement</SelectItem>
@@ -174,17 +199,33 @@ export default function ProjectDetails() {
                                  </div>
                                  <div className="space-y-2">
                                     <label className="text-sm font-medium">Start Date</label>
-                                    <Input type="date" value={editData.start_date} onChange={e => setEditData({...editData, start_date: e.target.value})} className="rounded-md" />
+                                    <Input type="date" value={editData.start_date} onChange={e => setEditData({ ...editData, start_date: e.target.value })} className="rounded-md" />
                                  </div>
                                  <div className="space-y-2">
                                     <label className="text-sm font-medium">Deadline</label>
-                                    <Input type="date" value={editData.deadline} onChange={e => setEditData({...editData, deadline: e.target.value})} className="rounded-md" />
+                                    <Input type="date" value={editData.deadline} onChange={e => setEditData({ ...editData, deadline: e.target.value })} className="rounded-md" />
+                                 </div>
+                                 <div className="space-y-2">
+                                    <label className="text-sm font-medium">Assigned Group</label>
+                                    <Select value={editData.group_id?.toString()} onValueChange={(v) => setEditData({...editData, group_id: v})}>
+                                       <SelectTrigger className="rounded-md"><SelectValue placeholder="Select Group" /></SelectTrigger>
+                                       <SelectContent>
+                                          {groups.map(g => (
+                                             <SelectItem key={g.id} value={g.id.toString()}>{g.name}</SelectItem>
+                                          ))}
+                                       </SelectContent>
+                                    </Select>
+                                 </div>
+                                 <div className="space-y-2">
+                                    <label className="text-sm font-medium">Developer ID</label>
+                                    <Input type="number" placeholder="Enter Developer User ID" value={editData.assigned_developer_id} onChange={e => setEditData({...editData, assigned_developer_id: e.target.value})} className="rounded-md" />
+                                    <p className="text-xs text-muted-foreground mt-1">Leave empty if unassigned.</p>
                                  </div>
                                  <div className="space-y-2 col-span-2">
                                     <label className="text-sm font-medium flex justify-between">
-                                      Progress Percentage <span>{editData.progress_percentage}%</span>
+                                       Progress Percentage <span>{editData.progress_percentage}%</span>
                                     </label>
-                                    <Input type="range" min="0" max="100" value={editData.progress_percentage} onChange={e => setEditData({...editData, progress_percentage: parseInt(e.target.value)})} className="w-full accent-primary" />
+                                    <Input type="range" min="0" max="100" value={editData.progress_percentage} onChange={e => setEditData({ ...editData, progress_percentage: parseInt(e.target.value) })} className="w-full accent-primary" />
                                  </div>
                                  <div className="space-y-2 col-span-2">
                                     <label className="text-sm font-medium">GitHub Repository</label>
@@ -192,9 +233,9 @@ export default function ProjectDetails() {
                                     <p className="text-xs text-muted-foreground mt-1">Example: PuneethKrishnaS/SoftMade</p>
                                  </div>
                               </div>
-                              <div className="flex justify-end gap-3 pt-4 border-t">
+                              <div className="flex justify-end gap-3 pt-4 border-t mt-4">
                                  <Button type="button" variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="rounded-md">Cancel</Button>
-                                 <Button type="submit" disabled={isSaving} className="rounded-md">{isSaving ? "Saving..." : "Save Changes"}</Button>
+                                 <Button type="submit" disabled={isSaving} className="rounded-md bg-foreground text-background hover:bg-foreground/90">{isSaving ? "Saving..." : "Save Changes"}</Button>
                               </div>
                            </form>
                         </DialogContent>
@@ -260,7 +301,7 @@ export default function ProjectDetails() {
                   Payments
                </TabsTrigger>
             </TabsList>
-            
+
             {/* Tab: Documents */}
             <TabsContent value="documents" className="space-y-4">
                {!project.github_repo ? (
@@ -338,7 +379,7 @@ export default function ProjectDetails() {
                            <p className="font-medium">{project.group.semester}</p>
                         </div>
                      </div>
-                     
+
                      <div className="border-t border-border pt-6">
                         <h3 className="font-semibold text-sm mb-4 uppercase tracking-wider text-muted-foreground">Members</h3>
                         <div className="space-y-3">
@@ -370,7 +411,7 @@ export default function ProjectDetails() {
             <TabsContent value="payments" className="space-y-4">
                <div className="flex justify-between items-center mb-6">
                   <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Invoices & Payments</h3>
-                  
+
                   <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
                      <DialogTrigger asChild>
                         <Button variant="outline" size="sm" className="rounded-md gap-2 h-8 text-xs">
@@ -384,15 +425,15 @@ export default function ProjectDetails() {
                         <form onSubmit={handlePaymentSubmit} className="space-y-4 pt-4">
                            <div className="space-y-2">
                               <label className="text-sm font-medium">Amount</label>
-                              <Input type="number" step="0.01" value={paymentData.amount} onChange={e => setPaymentData({...paymentData, amount: e.target.value})} required className="rounded-md" />
+                              <Input type="number" step="0.01" value={paymentData.amount} onChange={e => setPaymentData({ ...paymentData, amount: e.target.value })} required className="rounded-md" />
                            </div>
                            <div className="space-y-2">
                               <label className="text-sm font-medium">Description</label>
-                              <Input placeholder="e.g. 1st Installment" value={paymentData.description} onChange={e => setPaymentData({...paymentData, description: e.target.value})} required className="rounded-md" />
+                              <Input placeholder="e.g. 1st Installment" value={paymentData.description} onChange={e => setPaymentData({ ...paymentData, description: e.target.value })} required className="rounded-md" />
                            </div>
                            <div className="space-y-2">
                               <label className="text-sm font-medium">Status</label>
-                              <Select value={paymentData.status} onValueChange={(v) => setPaymentData({...paymentData, status: v})}>
+                              <Select value={paymentData.status} onValueChange={(v) => setPaymentData({ ...paymentData, status: v })}>
                                  <SelectTrigger className="rounded-md"><SelectValue /></SelectTrigger>
                                  <SelectContent>
                                     <SelectItem value="PENDING">Pending</SelectItem>
@@ -404,7 +445,7 @@ export default function ProjectDetails() {
                            </div>
                            <div className="space-y-2">
                               <label className="text-sm font-medium">Due Date</label>
-                              <Input type="date" value={paymentData.due_date} onChange={e => setPaymentData({...paymentData, due_date: e.target.value})} className="rounded-md" />
+                              <Input type="date" value={paymentData.due_date} onChange={e => setPaymentData({ ...paymentData, due_date: e.target.value })} className="rounded-md" />
                            </div>
                            <div className="flex justify-end gap-3 pt-4 border-t">
                               <Button type="button" variant="ghost" onClick={() => setIsPaymentDialogOpen(false)} className="rounded-md">Cancel</Button>
@@ -414,7 +455,7 @@ export default function ProjectDetails() {
                      </DialogContent>
                   </Dialog>
                </div>
-               
+
                {project.payments && project.payments.length > 0 ? (
                   <div className="border border-border rounded-md overflow-hidden">
                      <div className="grid grid-cols-12 gap-4 p-3 border-b bg-muted/30 text-xs font-semibold text-muted-foreground uppercase">
