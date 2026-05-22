@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { LayoutDashboard, FolderKanban, Activity, Download, Ticket, CreditCard, Bell, User, Settings, ChevronsUpDown, Check, PlusCircle, Loader2 } from "lucide-react";
+import { LayoutDashboard, Activity, Download, Ticket, CreditCard, Bell, User, Settings, ChevronsUpDown, Check, PlusCircle, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../lib/api";
 import { useAuthStore } from "../store/auth";
@@ -17,12 +17,6 @@ const SIDEBAR_ITEMS = [
 const BOTTOM_ITEMS = [
   { name: "Profile", path: "/dashboard/profile", icon: User },
   { name: "Settings", path: "/dashboard/settings", icon: Settings },
-];
-
-const MOCK_PROJECTS = [
-  { id: 'p1', name: 'AI Medical Assistant', role: 'Leader' },
-  { id: 'p2', name: 'IoT Smart Home', role: 'Member' },
-  { id: 'p3', name: 'E-Commerce Platform', role: 'Member' },
 ];
 
 export default function DashboardLayout() {

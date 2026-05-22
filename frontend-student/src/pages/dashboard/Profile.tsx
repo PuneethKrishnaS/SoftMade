@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useOutletContext } from "react-router-dom";
-import { Users, UserPlus, Building2, Phone, Mail, UserCircle, Briefcase } from "lucide-react";
+import { Users, UserPlus, Building2, Phone, UserCircle, Briefcase } from "lucide-react";
 
 const TEAM_MEMBERS = [
   { id: 1, name: "Rahul Sharma", usn: "1RV20CS001", role: "Leader" },
