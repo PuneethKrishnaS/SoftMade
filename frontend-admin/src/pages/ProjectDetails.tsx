@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Package, FileText, Loader2, Download, Users, Edit, GraduationCap, Building, Code, Calendar, ExternalLink, GitGraph, CreditCard, Plus } from "lucide-react";
+import { ArrowLeft, Package, FileText, Loader2, Download, Users, Edit, GraduationCap, Building, Code, Calendar, ExternalLink, GitGraph, CreditCard, Plus, Activity } from "lucide-react";
 
 export default function ProjectDetails() {
    const { id } = useParams();
