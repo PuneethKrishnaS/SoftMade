@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Package, FileText, Loader2, Download, ExternalLink, Calendar, Users, Code, Activity, GitGraph, Edit, GraduationCap, Building, Tag, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Package, FileText, Loader2, Download, ExternalLink, Calendar, Users, Code, Activity, GitGraph, Edit, GraduationCap, Building, Tag, CheckCircle2, Ticket } from "lucide-react";
 
 export default function ProjectDetails() {
    const { id } = useParams();
@@ -33,8 +33,10 @@ export default function ProjectDetails() {
            category: res.data.category,
            technology: res.data.technology,
            status: res.data.status,
+           start_date: res.data.start_date || '',
            deadline: res.data.deadline || '',
            github_repo: res.data.github_repo || '',
+           progress_percentage: res.data.progress_percentage || 0,
          });
 
          if (res.data.github_repo) {
@@ -155,8 +157,18 @@ export default function ProjectDetails() {
                                           </Select>
                                        </div>
                                        <div className="space-y-2">
+                                          <label className="text-sm font-medium">Start Date</label>
+                                          <Input type="date" value={editData.start_date} onChange={e => setEditData({...editData, start_date: e.target.value})} />
+                                       </div>
+                                       <div className="space-y-2">
                                           <label className="text-sm font-medium">Deadline</label>
                                           <Input type="date" value={editData.deadline} onChange={e => setEditData({...editData, deadline: e.target.value})} />
+                                       </div>
+                                       <div className="space-y-2 col-span-2">
+                                          <label className="text-sm font-medium flex justify-between">
+                                            Progress Percentage <span>{editData.progress_percentage}%</span>
+                                          </label>
+                                          <Input type="range" min="0" max="100" value={editData.progress_percentage} onChange={e => setEditData({...editData, progress_percentage: parseInt(e.target.value)})} className="w-full accent-primary" />
                                        </div>
                                        <div className="space-y-2 col-span-2">
                                           <label className="text-sm font-medium">GitHub Repository</label>
@@ -288,6 +300,9 @@ export default function ProjectDetails() {
                <TabsTrigger value="group" className="rounded-lg gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm px-6">
                   <GraduationCap className="w-4 h-4" /> Group Details
                </TabsTrigger>
+               <TabsTrigger value="tickets" className="rounded-lg gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm px-6">
+                  <Ticket className="w-4 h-4" /> Tickets
+               </TabsTrigger>
             </TabsList>
             
             {/* Tab: Releases */}
@@ -416,16 +431,27 @@ export default function ProjectDetails() {
                            <GraduationCap className="w-5 h-5 text-primary" /> Group Members
                         </h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                           {/* In the future, map over group.students here. For now, show the primary leader/contact info if available, or a placeholder */}
-                           <div className="flex items-center gap-4 p-4 rounded-2xl border border-border/50 bg-secondary/10">
-                              <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-lg">
-                                 L
-                              </div>
-                              <div>
-                                 <p className="font-semibold">Group Leader</p>
-                                 <Badge variant="secondary" className="mt-1 text-xs">Primary Contact</Badge>
-                              </div>
-                           </div>
+                           {project.group.members && project.group.members.length > 0 ? (
+                              project.group.members.map((member: any) => (
+                                 <div key={member.usn} className="flex flex-col gap-2 p-4 rounded-2xl border border-border/50 bg-secondary/10">
+                                    <div className="flex items-center gap-4">
+                                       <div className="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-lg">
+                                          {member.name[0]?.toUpperCase()}
+                                       </div>
+                                       <div>
+                                          <p className="font-semibold text-sm">{member.name}</p>
+                                          <p className="text-xs text-muted-foreground">{member.usn}</p>
+                                       </div>
+                                    </div>
+                                    <div className="text-xs mt-2 space-y-1">
+                                       <p><span className="text-muted-foreground">Email:</span> {member.email}</p>
+                                       <p><span className="text-muted-foreground">Phone:</span> {member.phone || 'N/A'}</p>
+                                    </div>
+                                 </div>
+                              ))
+                           ) : (
+                              <p className="text-muted-foreground col-span-full">No members found in this group.</p>
+                           )}
                         </div>
                      </CardContent>
                   </Card>
@@ -434,6 +460,36 @@ export default function ProjectDetails() {
                      <Users className="w-12 h-12 mx-auto mb-4 opacity-20" />
                      <h3 className="text-lg font-semibold text-foreground mb-1">No Group Assigned</h3>
                      <p>This project has not been assigned to a student group yet.</p>
+                  </div>
+               )}
+            </TabsContent>
+
+            {/* Tab: Tickets */}
+            <TabsContent value="tickets" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+               {project.tickets && project.tickets.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     {project.tickets.map((ticket: any) => (
+                        <Card key={ticket.id} className="rounded-2xl shadow-sm border-border/50">
+                           <CardContent className="p-5 flex justify-between items-start">
+                              <div>
+                                 <h4 className="font-semibold">{ticket.title}</h4>
+                                 <p className="text-xs text-muted-foreground mt-1">Created on {new Date(ticket.created_at).toLocaleDateString()}</p>
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                 <Badge variant="outline" className={`text-[10px] uppercase ${ticket.status === 'COMPLETED' ? 'text-green-500 border-green-500/20' : ticket.status === 'OPEN' ? 'text-blue-500 border-blue-500/20' : 'text-orange-500 border-orange-500/20'}`}>
+                                    {ticket.status}
+                                 </Badge>
+                                 <Badge variant="secondary" className="text-[10px] uppercase">{ticket.priority}</Badge>
+                              </div>
+                           </CardContent>
+                        </Card>
+                     ))}
+                  </div>
+               ) : (
+                  <div className="p-12 text-center text-muted-foreground bg-secondary/10 rounded-3xl border border-dashed border-border/60">
+                     <Ticket className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                     <h3 className="text-lg font-semibold text-foreground mb-1">No Tickets Found</h3>
+                     <p>Students have not raised any issues or tickets for this project yet.</p>
                   </div>
                )}
             </TabsContent>

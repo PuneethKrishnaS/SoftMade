@@ -8,9 +8,24 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 class StudentGroupSerializer(serializers.ModelSerializer):
+    members = serializers.SerializerMethodField()
+
     class Meta:
         model = StudentGroup
-        fields = '__all__'
+        fields = ['id', 'name', 'college_name', 'department', 'semester', 'created_at', 'members']
+        
+    def get_members(self, obj):
+        # Prevent circular imports or deep nesting by returning a simple dict
+        return [
+            {
+                "id": member.id,
+                "usn": member.usn,
+                "phone": member.phone,
+                "name": member.user.get_full_name() or member.user.username,
+                "email": member.user.email
+            }
+            for member in obj.members.all()
+        ]
 
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
@@ -23,10 +38,23 @@ class StudentSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     group = StudentGroupSerializer(read_only=True)
     assigned_developer = UserSerializer(read_only=True)
+    tickets = serializers.SerializerMethodField()
     
     class Meta:
         model = Project
         fields = '__all__'
+        
+    def get_tickets(self, obj):
+        return [
+            {
+                "id": t.id,
+                "title": t.title,
+                "status": t.status,
+                "priority": t.priority,
+                "created_at": t.created_at
+            }
+            for t in obj.tickets.all()
+        ]
 
 class TicketSerializer(serializers.ModelSerializer):
     student = StudentSerializer(read_only=True)
