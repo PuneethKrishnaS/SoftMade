@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, StudentGroup, Student, Project, Ticket
+from .models import User, StudentGroup, Student, Project, Ticket, Payment
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -39,6 +39,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     group = StudentGroupSerializer(read_only=True)
     assigned_developer = UserSerializer(read_only=True)
     tickets = serializers.SerializerMethodField()
+    payments = serializers.SerializerMethodField()
     
     class Meta:
         model = Project
@@ -55,6 +56,20 @@ class ProjectSerializer(serializers.ModelSerializer):
             }
             for t in obj.tickets.all()
         ]
+        
+    def get_payments(self, obj):
+        return [
+            {
+                "id": p.id,
+                "amount": p.amount,
+                "description": p.description,
+                "status": p.status,
+                "due_date": p.due_date,
+                "paid_date": p.paid_date,
+                "transaction_id": p.transaction_id
+            }
+            for p in obj.payments.all()
+        ]
 
 class TicketSerializer(serializers.ModelSerializer):
     student = StudentSerializer(read_only=True)
@@ -62,6 +77,11 @@ class TicketSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Ticket
+        fields = '__all__'
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
         fields = '__all__'
 
 # Custom Serializer for "Add Student Leader" which creates User, Group, and Student

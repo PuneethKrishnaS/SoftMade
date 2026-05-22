@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from .github_services import get_project_releases, get_project_documents
 
-from .models import StudentGroup, Student, Project, Ticket
+from .models import StudentGroup, Student, Project, Ticket, Payment
 from .serializers import (
     UserSerializer,
     StudentGroupSerializer,
@@ -15,7 +15,8 @@ from .serializers import (
     ProjectSerializer,
     TicketSerializer,
     CreateStudentLeaderSerializer,
-    CreateProjectSerializer
+    CreateProjectSerializer,
+    PaymentSerializer
 )
 
 User = get_user_model()
@@ -103,3 +104,8 @@ class CurrentUserView(APIView):
             except Student.DoesNotExist:
                 pass
         return Response(data)
+
+class PaymentViewSet(viewsets.ModelViewSet):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [AllowAny]

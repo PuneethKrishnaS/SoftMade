@@ -6,6 +6,7 @@ from .views import (
     StudentGroupViewSet,
     ProjectViewSet,
     TicketViewSet,
+    PaymentViewSet,
     RegisterStudentLeaderView,
     CurrentUserView
 )
@@ -15,6 +16,7 @@ router.register(r'students', StudentViewSet, basename='student')
 router.register(r'groups', StudentGroupViewSet, basename='group')
 router.register(r'projects', ProjectViewSet, basename='project')
 router.register(r'tickets', TicketViewSet, basename='ticket')
+router.register(r'payments', PaymentViewSet, basename='payment')
 
 urlpatterns = [
     # Auth Endpoints
