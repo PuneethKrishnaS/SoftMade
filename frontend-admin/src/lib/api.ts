@@ -4,7 +4,7 @@ import { useAuthStore } from '../store/auth';
 const API_URL = import.meta.env.VITE_API_URL || 'https://backend.softmake.in';
 
 const api = axios.create({
-  baseURL: `${API_URL}/api/`,
+  baseURL: `${API_URL.replace(/\/$/, '')}/api/`,
   headers: {
     'Content-Type': 'application/json',
   },
