@@ -36,7 +36,7 @@ export default function CreateStudent() {
       navigate("/admin/students");
     } catch (err: any) {
       const errMsg = err.response?.data?.non_field_errors?.[0] || 
-                     (typeof err.response?.data === 'object' ? Object.values(err.response.data)[0]?.[0] || JSON.stringify(err.response.data) : null) || 
+                     (typeof err.response?.data === 'object' && err.response.data !== null ? (Object.values(err.response.data)[0] as any)?.[0] || JSON.stringify(err.response.data) : null) || 
                      err.response?.data?.detail || 
                      "Registration failed.";
       setError(errMsg);
