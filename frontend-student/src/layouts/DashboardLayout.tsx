@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { LayoutDashboard, Download, Ticket, CreditCard, Bell, User, Settings, ChevronsUpDown, Check, Loader2 } from "lucide-react";
+import { LayoutDashboard, Download, Ticket, CreditCard, Bell, User, Settings, ChevronsUpDown, Check, Loader2, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../lib/api";
 import { useAuthStore } from "../store/auth";
@@ -25,6 +25,7 @@ export default function DashboardLayout() {
   const [projects, setProjects] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,8 +58,16 @@ export default function DashboardLayout() {
 
   return (
     <div className="flex h-screen bg-secondary/20 text-foreground overflow-hidden">
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+         <div 
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+         />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 border-r bg-background flex flex-col transition-all">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 border-r bg-background flex flex-col transition-transform duration-300 md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         {/* Project Switcher */}
         <div className="h-16 px-4 flex items-center border-b relative" ref={dropdownRef}>
           <button 
@@ -137,6 +146,7 @@ export default function DashboardLayout() {
               <Link
                 key={item.name}
                 to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   isActive ? "text-primary" : "text-muted-foreground hover:text-primary hover:bg-secondary/50"
                 }`}
@@ -163,6 +173,7 @@ export default function DashboardLayout() {
               <Link
                 key={item.name}
                 to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive ? "bg-secondary text-primary" : "text-muted-foreground hover:text-primary hover:bg-secondary/50"
                 }`}
@@ -176,12 +187,20 @@ export default function DashboardLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Navbar */}
-        <header className="h-16 border-b bg-background/50 backdrop-blur-sm flex items-center justify-between px-8 z-10">
-           <h1 className="font-semibold text-lg capitalize">
-              {location.pathname.split('/').pop() || 'Overview'}
-           </h1>
+        <header className="h-16 border-b bg-background/50 backdrop-blur-sm flex items-center justify-between px-4 md:px-8 z-10 shrink-0">
+           <div className="flex items-center gap-3">
+              <button 
+                 className="md:hidden p-2 rounded-md hover:bg-secondary text-muted-foreground"
+                 onClick={() => setIsMobileMenuOpen(true)}
+              >
+                 <Menu className="w-5 h-5" />
+              </button>
+              <h1 className="font-semibold text-lg capitalize">
+                 {location.pathname.split('/').pop() || 'Overview'}
+              </h1>
+           </div>
            <div className="flex items-center gap-4">
               <button className="relative p-2 rounded-full hover:bg-secondary text-muted-foreground transition-colors">
                  <Bell className="w-5 h-5" />

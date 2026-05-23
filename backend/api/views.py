@@ -13,19 +13,19 @@ from .serializers import (
     StudentSerializer,
     ProjectSerializer,
     TicketSerializer,
-    CreateStudentLeaderSerializer,
+    CreateStudentSerializer,
     CreateProjectSerializer,
     PaymentSerializer
 )
 
 User = get_user_model()
 
-class RegisterStudentLeaderView(generics.CreateAPIView):
+class RegisterStudentView(generics.CreateAPIView):
     """
-    Endpoint for Admin to register a new Student Leader.
+    Endpoint for Admin to register a new Student.
     This creates the User, StudentGroup, and Student models all at once.
     """
-    serializer_class = CreateStudentLeaderSerializer
+    serializer_class = CreateStudentSerializer
     permission_classes = [AllowAny] # In production, this should be IsAuthenticated & IsAdminUser
 
     def create(self, request, *args, **kwargs):
@@ -39,6 +39,17 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all().select_related('user')
     serializer_class = StudentSerializer
     permission_classes = [AllowAny]
+
+    @action(detail=False, methods=['get'])
+    def get_by_usn(self, request):
+        usn = request.query_params.get('usn')
+        if not usn:
+            return Response({"error": "USN parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            student = Student.objects.get(usn__iexact=usn)
+            return Response(StudentSerializer(student).data)
+        except Student.DoesNotExist:
+            return Response({"error": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
@@ -71,10 +82,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def github_documents(self, request, pk=None):
         project = self.get_object()
+        path = request.query_params.get('path', '')
         if not project.github_repo:
             return Response({"error": "No GitHub repository linked to this project."}, status=status.HTTP_400_BAD_REQUEST)
         
-        docs = get_project_documents(project.github_repo)
+        docs = get_project_documents(project.github_repo, path)
         return Response(docs)
 
     @action(detail=True, methods=['get'])
@@ -95,10 +107,53 @@ class ProjectViewSet(viewsets.ModelViewSet):
         usn = request.data.get('usn')
         if not usn:
             return Response({"error": "USN is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if project.students.count() >= 5:
+            return Response({"error": "Project already has the maximum of 5 students."}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            student = Student.objects.get(usn=usn)
+            student = Student.objects.get(usn__iexact=usn)
+            if project.students.filter(id=student.id).exists():
+                return Response({"error": "Student is already in this project."}, status=status.HTTP_400_BAD_REQUEST)
+                
             project.students.add(student)
             return Response({"status": "Student added successfully", "student": StudentSerializer(student).data})
+        except Student.DoesNotExist:
+            return Response({"error": f"Student with USN {usn} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=['post'])
+    def remove_student(self, request, pk=None):
+        project = self.get_object()
+        usn = request.data.get('usn')
+        if not usn:
+            return Response({"error": "USN is required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            student = Student.objects.get(usn__iexact=usn)
+            if not project.students.filter(id=student.id).exists():
+                return Response({"error": "Student is not in this project."}, status=status.HTTP_400_BAD_REQUEST)
+                
+            project.students.remove(student)
+            if project.leader == student:
+                project.leader = None
+                project.save()
+            return Response({"status": "Student removed successfully"})
+        except Student.DoesNotExist:
+            return Response({"error": f"Student with USN {usn} not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=['patch'])
+    def set_leader(self, request, pk=None):
+        project = self.get_object()
+        usn = request.data.get('usn')
+        if not usn:
+            return Response({"error": "USN is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            student = Student.objects.get(usn=usn)
+            if student not in project.students.all():
+                return Response({"error": f"Student {usn} must be part of the project to be a leader"}, status=status.HTTP_400_BAD_REQUEST)
+            project.leader = student
+            project.save()
+            return Response({"status": "Team leader updated successfully", "leader": StudentSerializer(student).data})
         except Student.DoesNotExist:
             return Response({"error": f"Student with USN {usn} not found"}, status=status.HTTP_404_NOT_FOUND)
 

@@ -29,7 +29,7 @@ def get_project_releases(repo_name):
     except GithubException:
         return []
 
-def get_project_documents(repo_name):
+def get_project_documents(repo_name, path=""):
     client = get_github_client()
     if not client or not repo_name:
         return []
@@ -38,9 +38,9 @@ def get_project_documents(repo_name):
         repo = client.get_repo(repo_name)
         documents = []
         
-        # Get all root contents
+        # Get all contents
         try:
-            root_contents = repo.get_contents("")
+            root_contents = repo.get_contents(path)
             if not isinstance(root_contents, list): root_contents = [root_contents]
             documents.extend(root_contents)
         except GithubException:

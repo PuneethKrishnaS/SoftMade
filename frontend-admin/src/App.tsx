@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/auth";
 import AdminLayout from "./layouts/AdminLayout";
 import Dashboard from "./pages/Dashboard";
@@ -42,6 +43,7 @@ function App() {
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
       </Routes>
+      <Toaster position="top-right" />
     </Router>
   );
 }

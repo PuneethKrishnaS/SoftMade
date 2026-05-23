@@ -6,7 +6,7 @@ from .views import (
     ProjectViewSet,
     TicketViewSet,
     PaymentViewSet,
-    RegisterStudentLeaderView,
+    RegisterStudentView,
     CurrentUserView,
     UserViewSet
 )
@@ -24,8 +24,8 @@ urlpatterns = [
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/me/', CurrentUserView.as_view(), name='current_user'),
     
-    # Custom Registration for Student Leaders
-    path('students/register-leader/', RegisterStudentLeaderView.as_view(), name='register_leader'),
+    # Custom Registration for Students
+    path('students/register/', RegisterStudentView.as_view(), name='register_student'),
     
     # Model ViewSets
     path('', include(router.urls)),

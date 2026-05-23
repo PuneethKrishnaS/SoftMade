@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Plus, Trash2, Mail, Phone, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../lib/api";
+import toast from "react-hot-toast";
 
 export default function Students() {
   const [students, setStudents] = useState<any[]>([]);
@@ -30,9 +31,10 @@ export default function Students() {
     try {
       await api.delete(`students/${usn}/`);
       setStudents(students.filter(s => s.usn !== usn));
+      toast.success("Student deleted");
     } catch (err) {
       console.error("Failed to delete student", err);
-      alert("Failed to delete student.");
+      toast.error("Failed to delete student.");
     }
   };
 

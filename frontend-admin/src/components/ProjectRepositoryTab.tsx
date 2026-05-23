@@ -3,10 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Download, FolderOpen, Loader2, Activity, Terminal, ChevronRight, ChevronDown, FileCode, FileImage, FileJson, FileType2, File } from "lucide-react";
-import { useOutletContext } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import stackoverflowLight from 'react-syntax-highlighter/dist/esm/styles/hljs/stackoverflow-light';
+import remarkGfm from 'remark-gfm';
 
 interface TreeNode {
    name: string;
@@ -147,8 +147,7 @@ function FileNodeViewer({ node, level = 0, onSelectFile, selectedPath }: { node:
    );
 }
 
-export default function Downloads() {
-   const { activeProject } = useOutletContext<{ activeProject: any }>();
+export default function ProjectRepositoryTab({ repoPath }: { repoPath: string }) {
    const [treeData, setTreeData] = useState<TreeNode[]>([]);
    const [readme, setReadme] = useState<string>("");
    const [loadingDocs, setLoadingDocs] = useState(false);
@@ -156,22 +155,22 @@ export default function Downloads() {
    const [selectedFile, setSelectedFile] = useState<{name: string, content: string, loading: boolean, path: string} | null>(null);
 
    useEffect(() => {
-      if (activeProject?.github_repo) {
+      if (repoPath) {
          setLoadingDocs(true);
-         fetch(`https://api.github.com/repos/${activeProject.github_repo}`)
+         fetch(`https://api.github.com/repos/${repoPath}`)
             .then(res => {
                if (!res.ok) throw new Error("Failed to fetch repo");
                return res.json();
             })
             .then(repo => {
                const branch = repo.default_branch;
-               return fetch(`https://api.github.com/repos/${activeProject.github_repo}/git/trees/${branch}?recursive=1`)
+               return fetch(`https://api.github.com/repos/${repoPath}/git/trees/${branch}?recursive=1`)
                   .then(res => res.json())
                   .then(data => ({ treeData: data, branch }));
             })
             .then(({ treeData, branch }) => {
                if (treeData && treeData.tree) {
-                  const root = buildTree(treeData.tree, branch, activeProject.github_repo);
+                  const root = buildTree(treeData.tree, branch, repoPath);
                   setTreeData(root);
                } else {
                   setTreeData([]);
@@ -182,12 +181,12 @@ export default function Downloads() {
       } else {
          setTreeData([]);
       }
-   }, [activeProject]);
+   }, [repoPath]);
 
    useEffect(() => {
-      if (activeProject?.github_repo) {
+      if (repoPath) {
          setLoadingReadme(true);
-         fetch(`https://api.github.com/repos/${activeProject.github_repo}/readme`, {
+         fetch(`https://api.github.com/repos/${repoPath}/readme`, {
             headers: {
                'Accept': 'application/vnd.github.v3.raw'
             }
@@ -202,7 +201,7 @@ export default function Downloads() {
       } else {
          setReadme("");
       }
-   }, [activeProject]);
+   }, [repoPath]);
 
 
    const handleSelectFile = (node: TreeNode) => {
@@ -220,14 +219,14 @@ export default function Downloads() {
       }
    };
 
-   if (!activeProject) {
+   if (!repoPath) {
       return (
-         <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed rounded-2xl bg-card/50">
+         <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed rounded-md bg-muted/20">
             <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mb-4">
                <FolderOpen className="w-6 h-6 text-muted-foreground opacity-50" />
             </div>
-            <h3 className="text-base font-medium text-foreground">No Active Project</h3>
-            <p className="text-muted-foreground text-sm mt-1 max-w-sm">You haven't been assigned to a project yet. Please contact your administrator.</p>
+            <h3 className="text-base font-medium text-foreground">No Repository Linked</h3>
+            <p className="text-muted-foreground text-sm mt-1 max-w-sm">Edit the project details to link a GitHub repository (e.g. owner/repo).</p>
          </div>
       );
    }
@@ -248,7 +247,7 @@ export default function Downloads() {
             <div className="flex items-center gap-4">
                <div>
                   <h2 className="text-sm font-bold uppercase tracking-widest text-foreground">Project Resources</h2>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{activeProject.title}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{repoPath}</p>
                </div>
             </div>
             <div className="flex items-center gap-3">
@@ -257,7 +256,7 @@ export default function Downloads() {
                </Badge>
                <Button 
                   size="sm" 
-                  onClick={() => window.open(`https://github.com/${activeProject.github_repo}/archive/HEAD.zip`, '_blank')}
+                  onClick={() => window.open(`https://github.com/${repoPath}/archive/HEAD.zip`, '_blank')}
                   className="h-7 text-xs px-3 bg-primary text-primary-foreground hover:bg-primary/90"
                >
                   <Download className="w-3.5 h-3.5 mr-1.5" />
@@ -266,8 +265,8 @@ export default function Downloads() {
             </div>
          </div>
 
-         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[calc(100vh-12rem)] min-h-[400px]">
-            <div className="lg:col-span-3 h-full min-h-0">
+         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[600px] min-h-[400px]">
+            <div className="lg:col-span-4 h-full min-h-0">
                <Card className="rounded-xl border-border/40 shadow-sm bg-card/60 backdrop-blur-sm h-full flex flex-col overflow-hidden">
                   <CardHeader className="px-5 py-3 border-b border-border/40 bg-background/50 flex flex-row items-center justify-between shrink-0">
                      <CardTitle className="text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 text-foreground">
@@ -299,7 +298,7 @@ export default function Downloads() {
                </Card>
             </div>
 
-            <div className="lg:col-span-9 h-full min-h-0 min-w-0">
+            <div className="lg:col-span-8 h-full min-h-0 min-w-0">
                <Card className="rounded-xl border-border/40 shadow-sm bg-card/60 backdrop-blur-sm h-full flex flex-col overflow-hidden">
                   <CardHeader className="px-5 py-3 border-b border-border/40 bg-background/50 flex flex-row items-center justify-between shrink-0">
                      <CardTitle className="text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 text-foreground">
@@ -329,7 +328,7 @@ export default function Downloads() {
                            <div className="h-full overflow-y-auto p-4 bg-background/30 custom-scrollbar">
                               {selectedFile.name.toLowerCase().endsWith('.md') ? (
                                  <article className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 prose-code:text-xs prose-code:bg-secondary prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-pre:bg-secondary/50 prose-pre:border prose-pre:border-border/50">
-                                    <ReactMarkdown>{selectedFile.content}</ReactMarkdown>
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{selectedFile.content}</ReactMarkdown>
                                  </article>
                               ) : (
                                  <SyntaxHighlighter 
@@ -351,7 +350,7 @@ export default function Downloads() {
                      ) : readme ? (
                         <div className="h-full overflow-y-auto p-8 bg-background/30 custom-scrollbar">
                            <article className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 prose-code:text-xs prose-code:bg-secondary prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-pre:bg-secondary/50 prose-pre:border prose-pre:border-border/50">
-                              <ReactMarkdown>{readme}</ReactMarkdown>
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{readme}</ReactMarkdown>
                            </article>
                         </div>
                      ) : (

@@ -16,6 +16,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     students = StudentSerializer(many=True, read_only=True)
+    leader = StudentSerializer(read_only=True)
     assigned_developer = UserSerializer(read_only=True)
     tickets = serializers.SerializerMethodField()
     payments = serializers.SerializerMethodField()
@@ -65,8 +66,8 @@ class PaymentSerializer(serializers.ModelSerializer):
         model = Payment
         fields = '__all__'
 
-# Custom Serializer for "Add Student Leader" which creates User, Group, and Student
-class CreateStudentLeaderSerializer(serializers.Serializer):
+# Custom Serializer for "Add Student" which creates User, Group, and Student
+class CreateStudentSerializer(serializers.Serializer):
     full_name = serializers.CharField(max_length=150)
     email = serializers.EmailField()
     contact_number = serializers.CharField(max_length=20)
@@ -75,6 +76,12 @@ class CreateStudentLeaderSerializer(serializers.Serializer):
     branch = serializers.CharField(max_length=100, required=False, allow_blank=True)
     semester = serializers.IntegerField(required=False, default=1)
     password = serializers.CharField(write_only=True)
+
+    def validate_usn(self, value):
+        username = value.lower()
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError(f"A student with USN '{value}' is already registered.")
+        return value
 
     def create(self, validated_data):
         # 1. Create the User
@@ -116,5 +123,7 @@ class CreateProjectSerializer(serializers.ModelSerializer):
         leader_usn = validated_data.pop('leader_usn')
         student = Student.objects.get(usn=leader_usn)
         project = super().create(validated_data)
+        project.leader = student
         project.students.add(student)
+        project.save()
         return project

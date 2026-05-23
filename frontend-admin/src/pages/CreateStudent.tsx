@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, UserPlus, Building2, Phone, Mail, Key } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../lib/api";
+import toast from "react-hot-toast";
 
 export default function CreateStudent() {
   const navigate = useNavigate();
@@ -27,13 +28,19 @@ export default function CreateStudent() {
     setError("");
     
     try {
-      await api.post("students/register-leader/", {
+      await api.post("students/register/", {
         ...formData,
         semester: parseInt(formData.semester)
       });
+      toast.success("Student registered successfully!");
       navigate("/admin/students");
     } catch (err: any) {
-      setError(err.response?.data?.detail || JSON.stringify(err.response?.data) || "Registration failed.");
+      const errMsg = err.response?.data?.non_field_errors?.[0] || 
+                     (typeof err.response?.data === 'object' ? Object.values(err.response.data)[0]?.[0] || JSON.stringify(err.response.data) : null) || 
+                     err.response?.data?.detail || 
+                     "Registration failed.";
+      setError(errMsg);
+      toast.error(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -52,8 +59,8 @@ export default function CreateStudent() {
           </Button>
         </Link>
         <div className="flex flex-col">
-          <h2 className="text-3xl font-bold tracking-tight">Add Team Leader</h2>
-          <p className="text-muted-foreground">Register a new student account as a group leader.</p>
+          <h2 className="text-3xl font-bold tracking-tight">Add Student</h2>
+          <p className="text-muted-foreground">Register a new student account in the system.</p>
         </div>
       </div>
 
@@ -61,10 +68,10 @@ export default function CreateStudent() {
         <CardHeader className="border-b bg-secondary/20">
           <CardTitle className="flex items-center gap-2">
             <UserPlus className="w-5 h-5 text-primary" />
-            Leader Details
+            Student Details
           </CardTitle>
           <CardDescription>
-            This account will be designated as the Team Leader. Only the leader's primary details are required; they can add their own team members later from the student portal.
+            Register a student so they can be assigned to projects. They can be designated as a Team Leader later in the Project settings.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8 pt-8">
@@ -147,7 +154,7 @@ export default function CreateStudent() {
               <Button variant="outline" type="button" className="rounded-xl px-8">Cancel</Button>
             </Link>
             <Button type="submit" className="rounded-xl px-8" disabled={isLoading}>
-              {isLoading ? "Registering..." : "Register Leader"}
+              {isLoading ? "Registering..." : "Register Student"}
             </Button>
           </div>
           </form>

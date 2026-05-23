@@ -7,10 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Package, Loader2, Download, Users, Edit, Calendar, ExternalLink, GitGraph, CreditCard, Plus, Activity, Trash2, FileOutput } from "lucide-react";
+import { ArrowLeft, Loader2, Download, Users, Edit, Calendar, ExternalLink, GitGraph, CreditCard, Plus, Activity, Trash2 } from "lucide-react";
 import { pdf, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import toast from 'react-hot-toast';
+import ProjectRepositoryTab from '../components/ProjectRepositoryTab';
 
 const pdfStyles = StyleSheet.create({
   page: { padding: 30, fontFamily: 'Helvetica' },
@@ -67,11 +67,7 @@ const PIPELINE_PHASES = [
 export default function ProjectDetails() {
    const { id } = useParams();
    const [project, setProject] = useState<any>(null);
-   const [releases, setReleases] = useState<any[]>([]);
-   const [documents, setDocuments] = useState<any[]>([]);
-   const [readmeContent, setReadmeContent] = useState<string | null>(null);
    const [isLoading, setIsLoading] = useState(true);
-   const [isGithubLoading, setIsGithubLoading] = useState(false);
 
    // Edit Form State
    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -86,8 +82,15 @@ export default function ProjectDetails() {
 
    const [isAddingStudent, setIsAddingStudent] = useState(false);
    const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
+   const [newUsn, setNewUsn] = useState("");
+   const [studentPreview, setStudentPreview] = useState<any>(null);
+   const [isPreviewing, setIsPreviewing] = useState(false);
 
    const fetchProject = async () => {
+      if (!id || id === "undefined") {
+         setIsLoading(false);
+         return;
+      }
       try {
          const res = await api.get(`projects/${id}/`);
          setProject(res.data);
@@ -105,24 +108,6 @@ export default function ProjectDetails() {
             total_price: res.data.total_price || 0,
             advance_payment: res.data.advance_payment || 0,
          });
-
-         if (res.data.github_repo) {
-            setIsGithubLoading(true);
-            try {
-               const [relRes, docRes, readmeRes] = await Promise.all([
-                  api.get(`projects/${id}/github_releases/`).catch(() => ({ data: [] })),
-                  api.get(`projects/${id}/github_documents/`).catch(() => ({ data: [] })),
-                  api.get(`projects/${id}/github_readme/`).catch(() => ({ data: { content: null } }))
-               ]);
-               setReleases(relRes.data);
-               setDocuments(docRes.data);
-               setReadmeContent(readmeRes.data.content);
-            } catch (ghErr) {
-               console.error("Failed to fetch github data", ghErr);
-            } finally {
-               setIsGithubLoading(false);
-            }
-         }
       } catch (err) {
          console.error("Failed to fetch project details", err);
       } finally {
@@ -148,9 +133,10 @@ export default function ProjectDetails() {
          await api.patch(`projects/${id}/`, payload);
          setIsEditDialogOpen(false);
          await fetchProject();
+         toast.success("Project updated successfully!");
       } catch (err: any) {
          console.error("Failed to update project", err.response?.data || err.message);
-         alert("Failed to update project: " + JSON.stringify(err.response?.data || {}));
+         toast.error("Failed to update project: " + JSON.stringify(err.response?.data || {}));
       } finally {
          setIsSaving(false);
       }
@@ -161,7 +147,7 @@ export default function ProjectDetails() {
       
       const amountToPay = parseFloat(paymentData.amount);
       if (amountToPay > remainingBalance) {
-         alert(`Payment amount (₹${amountToPay}) cannot exceed the remaining balance (₹${remainingBalance}).`);
+         toast.error(`Payment amount (₹${amountToPay}) cannot exceed the remaining balance (₹${remainingBalance}).`);
          return;
       }
 
@@ -177,9 +163,10 @@ export default function ProjectDetails() {
          setIsPaymentDialogOpen(false);
          setPaymentData({ amount: '', description: 'Payment', status: 'PAID', due_date: today, paid_date: today, transaction_id: '' });
          await fetchProject();
+         toast.success("Payment recorded successfully!");
       } catch (err: any) {
          console.error("Failed to create payment", err.response?.data || err.message);
-         alert("Failed to create payment: " + JSON.stringify(err.response?.data || {}));
+         toast.error("Failed to create payment: " + JSON.stringify(err.response?.data || {}));
       } finally {
          setIsPaymentSaving(false);
       }
@@ -190,24 +177,68 @@ export default function ProjectDetails() {
       try {
          await api.delete(`payments/${paymentId}/`);
          await fetchProject();
+         toast.success("Payment deleted");
       } catch (err) {
          console.error("Failed to delete payment", err);
-         alert("Failed to delete payment.");
+         toast.error("Failed to delete payment.");
+      }
+   };
+
+
+   const handleVerifyStudent = async () => {
+      if (!newUsn.trim()) {
+         toast.error("Please enter a USN");
+         return;
+      }
+      setIsPreviewing(true);
+      try {
+         const res = await api.get(`students/get_by_usn/?usn=${newUsn.trim()}`);
+         setStudentPreview(res.data);
+      } catch (err: any) {
+         setStudentPreview(null);
+         toast.error("Student not found: " + (err.response?.data?.error || "Invalid USN"));
+      } finally {
+         setIsPreviewing(false);
       }
    };
 
    const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      if (!studentPreview) return;
+      
       setIsAddingStudent(true);
-      const usn = new FormData(e.currentTarget).get('usn');
       try {
-         await api.post(`projects/${id}/add_student/`, { usn });
+         await api.post(`projects/${id}/add_student/`, { usn: studentPreview.usn });
          setIsAddStudentOpen(false);
+         setStudentPreview(null);
+         setNewUsn("");
          await fetchProject();
+         toast.success("Student added successfully!");
       } catch (err: any) {
-         alert("Failed to add student: " + (err.response?.data?.error || err.response?.data?.detail || "Unknown error"));
+         toast.error("Failed to add student: " + (err.response?.data?.error || err.response?.data?.detail || "Unknown error"));
       } finally {
          setIsAddingStudent(false);
+      }
+   };
+
+   const handleRemoveStudent = async (usn: string) => {
+      if (!window.confirm(`Are you sure you want to remove student ${usn} from this project?`)) return;
+      try {
+         await api.post(`projects/${id}/remove_student/`, { usn });
+         await fetchProject();
+         toast.success("Student removed successfully!");
+      } catch (err: any) {
+         toast.error("Failed to remove student: " + (err.response?.data?.error || "Unknown error"));
+      }
+   };
+
+   const handleSetLeader = async (usn: string) => {
+      try {
+         await api.patch(`projects/${id}/set_leader/`, { usn });
+         await fetchProject();
+         toast.success("Team leader updated successfully!");
+      } catch (err: any) {
+         toast.error("Failed to set leader: " + (err.response?.data?.error || "Unknown error"));
       }
    };
 
@@ -230,9 +261,10 @@ export default function ProjectDetails() {
          link.download = `${project.title.replace(/\s+/g, '_')}_Payment_Receipt.pdf`;
          link.click();
          URL.revokeObjectURL(url);
+         toast.success("Receipt generated!");
       } catch (err) {
          console.error("Failed to generate PDF", err);
-         alert("Failed to generate PDF. Make sure @react-pdf/renderer is installed.");
+         toast.error("Failed to generate PDF.");
       }
    };
 
@@ -244,7 +276,17 @@ export default function ProjectDetails() {
       );
    }
 
-   if (!project) return <div>Project not found</div>;
+   if (!project || !id || id === "undefined") {
+      return (
+         <div className="flex flex-col items-center justify-center min-h-[500px] text-center gap-4">
+            <h2 className="text-2xl font-bold text-foreground">Project Not Found</h2>
+            <p className="text-muted-foreground">This project might have been deleted or the link is invalid.</p>
+            <Link to="/admin/projects">
+               <Button variant="default">Back to Projects</Button>
+            </Link>
+         </div>
+      );
+   }
 
    const totalPaidFromInstallments = project?.payments?.filter((p:any) => p.status === 'PAID').reduce((s:number, p:any) => s + parseFloat(p.amount), 0) || 0;
    const advancePaid = parseFloat(project?.advance_payment) || 0;
@@ -432,11 +474,8 @@ export default function ProjectDetails() {
                <TabsTrigger value="overview" className="rounded-none bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 pb-3 gap-2 font-medium">
                   Overview
                </TabsTrigger>
-               <TabsTrigger value="documents" className="rounded-none bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 pb-3 gap-2 font-medium">
-                  Documents
-               </TabsTrigger>
-               <TabsTrigger value="releases" className="rounded-none bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 pb-3 gap-2 font-medium">
-                  Releases
+               <TabsTrigger value="repository" className="rounded-none bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 pb-3 gap-2 font-medium">
+                  Repository
                </TabsTrigger>
                <TabsTrigger value="group" className="rounded-none bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 pb-3 gap-2 font-medium">
                   Team
@@ -446,89 +485,51 @@ export default function ProjectDetails() {
                </TabsTrigger>
             </TabsList>
 
-            {/* Tab: Overview (README) */}
-            <TabsContent value="overview" className="space-y-4">
-               {!project.github_repo ? (
-                  <p className="text-sm text-muted-foreground">No GitHub repository linked to this project.</p>
-               ) : isGithubLoading ? (
-                  <div className="flex items-center justify-center p-12">
-                     <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            {/* Tab: Overview */}
+            <TabsContent value="overview" className="space-y-6">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="border border-border p-4 rounded-md bg-card">
+                     <p className="text-xs text-muted-foreground uppercase mb-1">Status</p>
+                     <p className="font-semibold">{project.status.replace('_', ' ')}</p>
                   </div>
-               ) : readmeContent ? (
-                  <div className="border border-border rounded-md p-6 bg-card text-card-foreground markdown-content space-y-4 [&>h1]:text-3xl [&>h1]:font-bold [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:mt-6 [&>h3]:text-xl [&>h3]:font-semibold [&>h3]:mt-4 [&>p]:text-muted-foreground [&>p]:leading-relaxed [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:space-y-1 [&>ul]:text-muted-foreground [&>ol]:list-decimal [&>ol]:pl-5 [&>pre]:bg-muted [&>pre]:p-4 [&>pre]:rounded-md [&>pre]:overflow-x-auto [&>code]:bg-muted [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded-sm [&>code]:text-sm [&>a]:text-primary [&>a]:underline [&>blockquote]:border-l-4 [&>blockquote]:border-muted-foreground/50 [&>blockquote]:pl-4 [&>blockquote]:italic">
-                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{readmeContent}</ReactMarkdown>
+                  <div className="border border-border p-4 rounded-md bg-card">
+                     <p className="text-xs text-muted-foreground uppercase mb-1">Developer</p>
+                     <p className="font-semibold">{project.assigned_developer ? project.assigned_developer.username : 'Unassigned'}</p>
                   </div>
-               ) : (
-                  <p className="text-sm text-muted-foreground">No README.md found in the repository.</p>
-               )}
+                  <div className="border border-border p-4 rounded-md bg-card">
+                     <p className="text-xs text-muted-foreground uppercase mb-1">Start Date</p>
+                     <p className="font-semibold">{project.start_date || 'N/A'}</p>
+                  </div>
+                  <div className="border border-border p-4 rounded-md bg-card">
+                     <p className="text-xs text-muted-foreground uppercase mb-1">Deadline</p>
+                     <p className="font-semibold">{project.deadline || 'N/A'}</p>
+                  </div>
+               </div>
+               <div className="border border-border p-6 rounded-md bg-card">
+                  <h3 className="font-bold text-lg mb-4">Project Description</h3>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{project.description}</p>
+               </div>
             </TabsContent>
 
-            {/* Tab: Documents */}
-            <TabsContent value="documents" className="space-y-4">
-               {!project.github_repo ? (
-                  <p className="text-sm text-muted-foreground">No GitHub repository linked. Cannot fetch documents.</p>
-               ) : isGithubLoading ? (
-                  <p className="text-sm text-muted-foreground flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Fetching...</p>
-               ) : documents.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No documents found in the repository.</p>
-               ) : (
-                  <div className="space-y-2">
-                     {documents.map((doc: any) => (
-                        <a key={doc.path} href={doc.download_url} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-4 rounded-md border border-border bg-card hover:bg-muted/50 transition-colors group">
-                           <div className="bg-primary/10 p-2 rounded-md">
-                              <FileOutput className="w-5 h-5 text-primary" />
-                           </div>
-                           <div className="flex flex-col">
-                              <span className="text-sm font-semibold capitalize">{doc.name.replace('.pdf', '').replace(/-/g, ' ')}</span>
-                              <span className="text-xs text-muted-foreground">{doc.path} • {(doc.size / 1024).toFixed(1)} KB</span>
-                           </div>
-                           <Download className="w-4 h-4 ml-auto text-muted-foreground group-hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </a>
-                     ))}
-                  </div>
-               )}
+            {/* Tab: Repository */}
+            <TabsContent value="repository" className="space-y-4">
+               <ProjectRepositoryTab repoPath={project.github_repo} />
             </TabsContent>
 
-            {/* Tab: Releases */}
-            <TabsContent value="releases" className="space-y-4">
-               {!project.github_repo ? (
-                  <p className="text-sm text-muted-foreground">No GitHub repository linked. Cannot fetch releases.</p>
-               ) : isGithubLoading ? (
-                  <p className="text-sm text-muted-foreground flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Fetching...</p>
-               ) : releases.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No releases found in the repository.</p>
-               ) : (
-                  <div className="space-y-6">
-                     {releases.map((release) => (
-                        <div key={release.id} className="border border-border rounded-md p-5">
-                           <div className="flex items-center justify-between mb-4">
-                              <h3 className="font-semibold">{release.name}</h3>
-                              <span className="text-xs text-muted-foreground">{new Date(release.published_at).toLocaleDateString()}</span>
-                           </div>
-                           <div className="space-y-2">
-                              {release.assets.map((asset: any) => (
-                                 <div key={asset.name} className="flex items-center justify-between p-3 bg-muted/30 rounded-md text-sm">
-                                    <div className="flex items-center gap-2">
-                                       <Package className="w-4 h-4 text-muted-foreground" /> {asset.name}
-                                    </div>
-                                    <a href={asset.download_url} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground">
-                                       <Download className="w-4 h-4" />
-                                    </a>
-                                 </div>
-                              ))}
-                           </div>
-                        </div>
-                     ))}
-                  </div>
-               )}
-            </TabsContent>
+
 
             {/* Tab: Group */}
             <TabsContent value="group" className="space-y-8">
                <div className="flex justify-between items-center mb-6">
                   <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Project Team Members</h3>
 
-                  <Dialog open={isAddStudentOpen} onOpenChange={setIsAddStudentOpen}>
+                  <Dialog open={isAddStudentOpen} onOpenChange={(open) => {
+                     setIsAddStudentOpen(open);
+                     if (!open) {
+                        setStudentPreview(null);
+                        setNewUsn("");
+                     }
+                  }}>
                      <DialogTrigger asChild>
                         <Button variant="outline" size="sm" className="rounded-md gap-2 h-8 text-xs">
                            <Plus className="w-3.5 h-3.5" /> Add Student
@@ -541,11 +542,39 @@ export default function ProjectDetails() {
                         <form onSubmit={handleAddStudent} className="space-y-4 pt-4">
                            <div className="space-y-2">
                               <label className="text-sm font-medium">Student USN</label>
-                              <Input name="usn" required className="rounded-md" placeholder="Enter student USN" />
+                              <div className="flex gap-2">
+                                 <Input 
+                                    name="usn" 
+                                    className="rounded-md" 
+                                    placeholder="Enter student USN" 
+                                    value={newUsn}
+                                    onChange={(e) => setNewUsn(e.target.value)}
+                                    disabled={!!studentPreview}
+                                    required={!studentPreview}
+                                 />
+                                 {!studentPreview ? (
+                                    <Button type="button" onClick={handleVerifyStudent} disabled={isPreviewing || !newUsn}>
+                                       {isPreviewing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
+                                    </Button>
+                                 ) : (
+                                    <Button type="button" variant="outline" onClick={() => setStudentPreview(null)}>
+                                       Change
+                                    </Button>
+                                 )}
+                              </div>
                            </div>
+                           
+                           {studentPreview && (
+                              <div className="p-3 bg-muted/50 rounded-md border border-border mt-4">
+                                 <h4 className="font-semibold text-sm">{studentPreview.user?.first_name || studentPreview.user?.username || studentPreview.usn}</h4>
+                                 <p className="text-xs text-muted-foreground mt-1">{studentPreview.college_name}</p>
+                                 <p className="text-xs text-muted-foreground">{studentPreview.department} - Sem {studentPreview.semester}</p>
+                              </div>
+                           )}
+
                            <div className="flex justify-end gap-3 pt-4 border-t">
                               <Button type="button" variant="ghost" onClick={() => setIsAddStudentOpen(false)} className="rounded-md">Cancel</Button>
-                              <Button type="submit" disabled={isAddingStudent} className="rounded-md">{isAddingStudent ? "Adding..." : "Add"}</Button>
+                              <Button type="submit" disabled={isAddingStudent || !studentPreview} className="rounded-md">{isAddingStudent ? "Adding..." : "Add to Project"}</Button>
                            </div>
                         </form>
                      </DialogContent>
@@ -555,18 +584,45 @@ export default function ProjectDetails() {
                <div className="border border-border rounded-md overflow-hidden">
                   <div className="divide-y divide-border">
                      {project.students && project.students.length > 0 ? (
-                        project.students.map((student: any) => (
-                           <div key={student.usn} className="flex items-center justify-between p-4 bg-background text-sm">
+                        project.students.map((student: any) => {
+                           const isLeader = project.leader?.id === student.id;
+                           return (
+                           <div key={student.usn} className="flex items-center justify-between p-4 bg-background text-sm group">
                               <div>
-                                 <p className="font-medium text-foreground">{student.user?.first_name || student.user?.username || student.usn}</p>
+                                 <div className="flex items-center gap-2">
+                                    <p className="font-medium text-foreground">{student.user?.first_name || student.user?.username || student.usn}</p>
+                                    {isLeader && <Badge variant="secondary" className="bg-primary/10 text-primary text-[10px] uppercase border-transparent">Team Leader</Badge>}
+                                 </div>
                                  <p className="text-xs text-muted-foreground">{student.usn}</p>
                               </div>
-                              <div className="text-right text-muted-foreground text-xs">
-                                 <p>{student.user?.email || 'No email'}</p>
-                                 <p>{student.phone || 'No phone'}</p>
+                              <div className="flex items-center gap-4">
+                                 <div className="text-right text-muted-foreground text-xs">
+                                    <p>{student.user?.email || 'No email'}</p>
+                                    <p>{student.phone || 'No phone'}</p>
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                    {!isLeader && (
+                                       <Button 
+                                          variant="outline" 
+                                          size="sm" 
+                                          className="h-8 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                          onClick={() => handleSetLeader(student.usn)}
+                                       >
+                                          Set as Leader
+                                       </Button>
+                                    )}
+                                    <Button
+                                       variant="ghost"
+                                       size="icon"
+                                       className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                                       onClick={() => handleRemoveStudent(student.usn)}
+                                    >
+                                       <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                 </div>
                               </div>
                            </div>
-                        ))
+                        )})
                      ) : (
                         <div className="p-8 text-center text-muted-foreground text-sm">No students assigned to this project.</div>
                      )}
