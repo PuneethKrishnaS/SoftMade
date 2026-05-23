@@ -8,7 +8,7 @@ export default function LandingPage() {
       <nav className="fixed top-0 w-full z-50 bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto flex h-16 items-center justify-between px-6">
           <div className="flex gap-2 items-center">
-            <img src="/logo.avif" alt="Softmade Logo" className="h-8 w-auto" />
+            <img src="/logo.avif" alt="Softmade Logo" className="h-8 w-auto" width="120" height="32" />
           </div>
           <div className="flex items-center gap-4">
             <Link to="/login" className="text-sm font-medium hover:bg-gray-100 px-4 py-2 rounded-md transition-colors">
@@ -44,7 +44,7 @@ export default function LandingPage() {
               </a>
             </div>
 
-            <p className="text-sm text-gray-400 font-medium pt-2">
+            <p className="text-sm text-gray-500 font-medium pt-2">
               Trusted by thousands of engineering students.
             </p>
           </div>
@@ -55,6 +55,8 @@ export default function LandingPage() {
                 src="/notion-hero.png"
                 alt="Student working on laptop illustration"
                 className="w-full h-auto object-contain mix-blend-multiply"
+                width="512"
+                height="512"
               />
             </div>
           </div>
@@ -105,7 +107,7 @@ export default function LandingPage() {
               { domain: "Cybersecurity", title: "Intrusion Detection System", tech: "Python, Snort, React", desc: "A network monitoring tool that visualizes malicious packet payloads in real-time." },
             ].map((proj, i) => (
               <div key={i} className="p-6 border border-gray-200 rounded-xl hover:border-black transition-colors group cursor-pointer">
-                <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{proj.domain}</div>
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{proj.domain}</div>
                 <h3 className="font-semibold text-xl mb-3 text-black">{proj.title}</h3>
                 <p className="text-sm text-gray-600 mb-6 leading-relaxed">{proj.desc}</p>
                 <div className="text-xs font-mono text-gray-500 bg-gray-50 p-2 rounded inline-block">
@@ -128,17 +130,17 @@ export default function LandingPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8">
                 <div className="space-y-2">
                   <Briefcase className="w-5 h-5 text-black" />
-                  <h4 className="font-semibold">Industry Experts</h4>
+                  <h3 className="font-semibold text-lg">Industry Experts</h3>
                   <p className="text-sm text-gray-600">Your projects are handled by professional developers, not interns.</p>
                 </div>
                 <div className="space-y-2">
                   <Zap className="w-5 h-5 text-black" />
-                  <h4 className="font-semibold">Fast Turnaround</h4>
+                  <h3 className="font-semibold text-lg">Fast Turnaround</h3>
                   <p className="text-sm text-gray-600">We respect academic deadlines and guarantee timely deliveries.</p>
                 </div>
                 <div className="space-y-2">
                   <ShieldCheck className="w-5 h-5 text-black" />
-                  <h4 className="font-semibold">Plagiarism Free</h4>
+                  <h3 className="font-semibold text-lg">Plagiarism Free</h3>
                   <p className="text-sm text-gray-600">Every project is built from scratch ensuring zero academic violations.</p>
                 </div>
               </div>
@@ -201,7 +203,7 @@ export default function LandingPage() {
       <footer className="border-t border-gray-200 py-12 bg-gray-50/50">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
-            <img src="/logo.avif" alt="Softmade Logo" className="h-6 w-auto grayscale opacity-80" />
+            <img src="/logo.avif" alt="Softmade Logo" className="h-6 w-auto grayscale opacity-80" width="90" height="24" />
             <span className="text-sm font-medium text-gray-900">Softmade IT Solutions</span>
           </div>
           <div className="text-sm text-gray-500">© 2026 All rights reserved.</div>
