@@ -248,10 +248,10 @@ export default function ProjectDetails() {
          const blob = await pdf(
             <ReceiptDocument 
                project={project} 
-               totalPrice={totalPrice} 
-               advancePaid={advancePaid} 
-               totalCollected={totalCollected} 
-               remainingBalance={remainingBalance} 
+               totalPrice={displayTotalPrice} 
+               advancePaid={displayAdvancePaid} 
+               totalCollected={displayTotalCollected} 
+               remainingBalance={displayRemainingBalance} 
             />
          ).toBlob();
          
@@ -294,6 +294,11 @@ export default function ProjectDetails() {
    const totalCollected = advancePaid + totalPaidFromInstallments;
    const remainingBalance = Math.max(0, totalPrice - totalCollected);
    const paymentStatus = remainingBalance <= 0 && totalPrice > 0 ? "Fully Paid" : (totalCollected > 0 ? "Partially Paid" : "Unpaid");
+
+   const displayTotalPrice = totalPrice.toFixed(2);
+   const displayAdvancePaid = advancePaid.toFixed(2);
+   const displayTotalCollected = totalCollected.toFixed(2);
+   const displayRemainingBalance = remainingBalance.toFixed(2);
 
    const currentPhaseIndex = PIPELINE_PHASES.indexOf(project.status);
 
@@ -399,11 +404,11 @@ export default function ProjectDetails() {
                                  </div>
                                  <div className="space-y-2">
                                     <label className="text-sm font-medium">Total Price</label>
-                                    <Input type="number" value={editData.total_price} onChange={e => setEditData({...editData, total_price: parseFloat(e.target.value)})} className="rounded-md" />
+                                    <Input type="number" step="0.01" value={editData.total_price} onChange={e => setEditData({...editData, total_price: e.target.value})} className="rounded-md" />
                                  </div>
                                  <div className="space-y-2">
                                     <label className="text-sm font-medium">Advance Payment</label>
-                                    <Input type="number" value={editData.advance_payment} onChange={e => setEditData({...editData, advance_payment: parseFloat(e.target.value)})} className="rounded-md" />
+                                    <Input type="number" step="0.01" value={editData.advance_payment} onChange={e => setEditData({...editData, advance_payment: e.target.value})} className="rounded-md" />
                                  </div>
                                  <div className="space-y-2 col-span-2">
                                     <label className="text-sm font-medium flex justify-between">
@@ -636,22 +641,22 @@ export default function ProjectDetails() {
                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="border border-border rounded-md p-4 bg-muted/20">
                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Total Price</p>
-                     <p className="text-2xl font-semibold">₹{totalPrice}</p>
+                     <p className="text-2xl font-semibold">₹{displayTotalPrice}</p>
                   </div>
                   <div className="border border-border rounded-md p-4 bg-muted/20">
                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Advance Paid</p>
-                     <p className="text-2xl font-semibold text-emerald-600">₹{advancePaid}</p>
+                     <p className="text-2xl font-semibold text-emerald-600">₹{displayAdvancePaid}</p>
                   </div>
                   <div className="border border-border rounded-md p-4 bg-muted/20">
                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Payments Collected</p>
                      <p className="text-2xl font-semibold text-emerald-600">
-                        ₹{totalPaidFromInstallments}
+                        ₹{displayTotalCollected}
                      </p>
                   </div>
                   <div className="border border-border rounded-md p-4 bg-muted/20">
                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Remaining Balance</p>
                      <p className="text-2xl font-semibold text-destructive">
-                        ₹{remainingBalance}
+                        ₹{displayRemainingBalance}
                      </p>
                   </div>
                </div>

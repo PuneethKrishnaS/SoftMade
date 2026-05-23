@@ -1,6 +1,6 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { LayoutDashboard, Download, Ticket, CreditCard, Bell, User, Settings, ChevronsUpDown, Check, Loader2, Menu } from "lucide-react";
+import { LayoutDashboard, Download, Ticket, CreditCard, Bell, User, Settings, ChevronsUpDown, Check, Loader2, Menu, LogOut, Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../lib/api";
 import { useAuthStore } from "../store/auth";
@@ -21,12 +21,27 @@ const BOTTOM_ITEMS = [
 export default function DashboardLayout() {
   const location = useLocation();
   const user = useAuthStore(state => state.user);
+  const logout = useAuthStore(state => state.logout);
+  const navigate = useNavigate();
   const [activeProject, setActiveProject] = useState<any>(null);
   const [projects, setProjects] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+
+  const toggleTheme = () => {
+    document.documentElement.classList.toggle('dark');
+    setIsDarkMode(document.documentElement.classList.contains('dark'));
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -45,11 +60,14 @@ export default function DashboardLayout() {
     fetchProject();
   }, []);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+      }
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setIsProfileDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -202,12 +220,60 @@ export default function DashboardLayout() {
               </h1>
            </div>
            <div className="flex items-center gap-4">
+              <button onClick={toggleTheme} className="relative p-2 rounded-full hover:bg-secondary text-muted-foreground transition-colors">
+                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
               <button className="relative p-2 rounded-full hover:bg-secondary text-muted-foreground transition-colors">
                  <Bell className="w-5 h-5" />
                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-background" />
               </button>
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm cursor-pointer shadow-sm">
-                 {user?.first_name ? user.first_name.charAt(0).toUpperCase() : 'U'}
+              
+              <div className="relative" ref={profileDropdownRef}>
+                 <div 
+                    onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                    className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm cursor-pointer shadow-sm"
+                 >
+                    {user?.first_name ? user.first_name.charAt(0).toUpperCase() : 'U'}
+                 </div>
+
+                 <AnimatePresence>
+                    {isProfileDropdownOpen && (
+                       <motion.div 
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute right-0 mt-2 w-48 bg-popover text-popover-foreground border shadow-lg rounded-xl overflow-hidden z-50"
+                       >
+                          <div className="px-4 py-3 border-b border-border/50">
+                             <p className="text-sm font-medium">{user?.first_name || 'User'}</p>
+                             <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                          </div>
+                          <div className="p-1">
+                             <Link 
+                                to="/dashboard/profile"
+                                onClick={() => setIsProfileDropdownOpen(false)}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-secondary transition-colors text-left"
+                             >
+                                <User className="w-4 h-4" /> Profile
+                             </Link>
+                             <Link 
+                                to="/dashboard/settings"
+                                onClick={() => setIsProfileDropdownOpen(false)}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-secondary transition-colors text-left"
+                             >
+                                <Settings className="w-4 h-4" /> Settings
+                             </Link>
+                             <button 
+                                onClick={handleLogout}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-destructive rounded-md hover:bg-destructive/10 transition-colors text-left"
+                             >
+                                <LogOut className="w-4 h-4" /> Logout
+                             </button>
+                          </div>
+                       </motion.div>
+                    )}
+                 </AnimatePresence>
               </div>
            </div>
         </header>
