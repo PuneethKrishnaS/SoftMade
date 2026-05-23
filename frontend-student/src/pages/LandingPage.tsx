@@ -8,13 +8,13 @@ export default function LandingPage() {
       <nav className="fixed top-0 w-full z-50 bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto flex h-16 items-center justify-between px-6">
           <div className="flex gap-2 items-center">
-            <img src="/logo.avif" alt="Softmade Logo" className="h-8 w-auto" width="120" height="32" />
+            <img src="/logo.avif" alt="Softmake Logo" className="h-8 w-auto" width="120" height="32" />
           </div>
           <div className="flex items-center gap-4">
             <Link to="/login" className="text-sm font-medium hover:bg-gray-100 px-4 py-2 rounded-md transition-colors">
               Student Login
             </Link>
-            <a href="mailto:contact@softmade.com" className="text-sm font-medium bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors">
+            <a href="mailto:softmadeitsolutions@gmail.com" className="text-sm font-medium bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors">
               Contact Us
             </a>
           </div>
@@ -122,7 +122,7 @@ export default function LandingPage() {
         <section id="company" className="pt-12">
           <div className="p-12 border border-gray-200 rounded-2xl bg-gray-50/50">
             <div className="max-w-3xl space-y-6">
-              <h2 className="text-3xl font-bold tracking-tight text-black">About Softmade IT Solutions.</h2>
+              <h2 className="text-3xl font-bold tracking-tight text-black">About Softmake IT Solutions.</h2>
               <p className="text-lg text-gray-600 leading-relaxed">
                 We are a specialized development agency dedicated to bridging the gap between academic requirements and industry-level software engineering.
                 Our mission is to help students overcome technical hurdles by delivering robust, scalable, and well-documented projects.
@@ -203,8 +203,8 @@ export default function LandingPage() {
       <footer className="border-t border-gray-200 py-12 bg-gray-50/50">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
-            <img src="/logo.avif" alt="Softmade Logo" className="h-6 w-auto grayscale opacity-80" width="90" height="24" />
-            <span className="text-sm font-medium text-gray-900">Softmade IT Solutions</span>
+            <img src="/logo.avif" alt="Softmake Logo" className="h-6 w-auto grayscale opacity-80" width="90" height="24" />
+            <span className="text-sm font-medium text-gray-900">Softmake IT Solutions</span>
           </div>
           <div className="text-sm text-gray-500">© 2026 All rights reserved.</div>
         </div>

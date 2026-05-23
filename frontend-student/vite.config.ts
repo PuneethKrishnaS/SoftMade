@@ -13,8 +13,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'SoftMade Student Portal',
-        short_name: 'SoftMade',
+        name: 'SoftMake Student Portal',
+        short_name: 'SoftMake',
         description: 'Professional Student Portal for Project Management',
         theme_color: '#ffffff',
         background_color: '#ffffff',

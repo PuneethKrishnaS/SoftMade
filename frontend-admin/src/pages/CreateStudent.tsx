@@ -19,7 +19,7 @@ export default function CreateStudent() {
     college_name: "",
     branch: "",
     semester: "8",
-    password: "Softmade@2026",
+    password: "Softmake@2026",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
