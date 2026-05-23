@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { LayoutDashboard, Activity, Download, Ticket, CreditCard, Bell, User, Settings, ChevronsUpDown, Check, PlusCircle, Loader2 } from "lucide-react";
+import { LayoutDashboard, Download, Ticket, CreditCard, Bell, User, Settings, ChevronsUpDown, Check, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../lib/api";
 import { useAuthStore } from "../store/auth";

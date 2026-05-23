@@ -6,7 +6,6 @@ import { FileText, Download, FolderOpen, Loader2, FileArchive, Activity, Termina
 import { useOutletContext } from "react-router-dom";
 import api from "@/lib/api";
 import ReactMarkdown from "react-markdown";
-import { cn } from "@/lib/utils";
 
 export default function Downloads() {
   const { activeProject } = useOutletContext<{ activeProject: any }>();

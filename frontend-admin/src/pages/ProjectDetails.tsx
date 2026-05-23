@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Package, FileText, Loader2, Download, Users, Edit, GraduationCap, Building, Code, Calendar, ExternalLink, GitGraph, CreditCard, Plus, Activity, Trash2, FileOutput } from "lucide-react";
+import { ArrowLeft, Package, Loader2, Download, Users, Edit, Calendar, ExternalLink, GitGraph, CreditCard, Plus, Activity, Trash2, FileOutput } from "lucide-react";
 import { pdf, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -77,8 +77,6 @@ export default function ProjectDetails() {
    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
    const [isSaving, setIsSaving] = useState(false);
    const [editData, setEditData] = useState<any>({});
-   const [groups, setGroups] = useState<any[]>([]);
-   const [developers, setDevelopers] = useState<any[]>([]);
 
    // Payment Form State
    const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
@@ -107,9 +105,6 @@ export default function ProjectDetails() {
             total_price: res.data.total_price || 0,
             advance_payment: res.data.advance_payment || 0,
          });
-
-         // Assuming backend has an endpoint for users or we can just leave it as text for now if no endpoint exists, but let's try fetching users
-         api.get('students/').then(d => setDevelopers(d.data)).catch(console.error); // We might need a users endpoint for developers.
 
          if (res.data.github_repo) {
             setIsGithubLoading(true);
@@ -242,9 +237,6 @@ export default function ProjectDetails() {
    };
 
    if (isLoading) {
-      const PIPELINE_PHASES = ['REQUIREMENT', 'TOPIC', 'SYNOPSIS', 'DESIGN', 'FRONTEND', 'BACKEND', 'DATABASE', 'TESTING', 'REPORT', 'DEPLOYMENT', 'DELIVERED'];
-   const currentPhaseIndex = PIPELINE_PHASES.indexOf(project?.status);
-
    return (
          <div className="flex items-center justify-center min-h-[500px]">
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />

@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, FolderKanban, Ticket, UploadCloud, CreditCard, BarChart3, Bell, Settings, Search } from "lucide-react";
+import { LayoutDashboard, Users, FolderKanban, Ticket, CreditCard, BarChart3, Bell, Settings, Search } from "lucide-react";
 import { motion } from "framer-motion";
 
 const SIDEBAR_ITEMS = [

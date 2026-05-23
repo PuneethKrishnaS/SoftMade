@@ -153,7 +153,7 @@ export default function Analytics() {
                    <YAxis tickFormatter={(val) => `₹${val}`} tick={{fontSize: 12}} stroke="#888888" />
                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                    <Tooltip 
-                      formatter={(value: number) => [`₹${value.toLocaleString()}`, 'Revenue']}
+                      formatter={(value: any) => [`₹${Number(value).toLocaleString()}`, 'Revenue']}
                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                    />
                    <Area type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
@@ -224,7 +224,7 @@ export default function Analytics() {
                    <XAxis dataKey="name" tick={{fontSize: 11}} stroke="#888888" tickMargin={10} />
                    <YAxis tickFormatter={(val) => `₹${val}`} tick={{fontSize: 12}} stroke="#888888" />
                    <Tooltip 
-                      formatter={(value: number) => `₹${value.toLocaleString()}`}
+                      formatter={(value: any) => `₹${Number(value).toLocaleString()}`}
                       cursor={{fill: '#f3f4f6'}}
                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                    />

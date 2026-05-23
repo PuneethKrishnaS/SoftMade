@@ -176,7 +176,7 @@ export default function CreateProject() {
                            <CommandEmpty>No category found.</CommandEmpty>
                            <CommandGroup>
                               {DOMAINS.map((domain) => (
-                                 <CommandItem key={domain} onSelect={(val) => { setFormData({...formData, category: domain}); setOpenDomain(false); }}>
+                                 <CommandItem key={domain} onSelect={() => { setFormData({...formData, category: domain}); setOpenDomain(false); }}>
                                     <Check className={cn("mr-2 h-4 w-4", formData.category === domain ? "opacity-100" : "opacity-0")} />
                                     {domain}
                                  </CommandItem>

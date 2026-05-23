@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { CreditCard, Receipt, ArrowUpRight, CheckCircle2, Clock, Activity, IndianRupee } from "lucide-react";
+import { CreditCard, Receipt, ArrowUpRight, CheckCircle2, Clock, Activity } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
 import { cn } from "@/lib/utils";
 

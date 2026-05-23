@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle2, Ticket as TicketIcon, IndianRupee, Users, Tag, ShieldCheck, Mail, Code, Calendar, Clock, Activity, ArrowRight, ArrowUpRight } from "lucide-react";
+import { CheckCircle2, Ticket as TicketIcon, IndianRupee, Users, ShieldCheck, Code, Calendar, Clock, Activity, ArrowRight } from "lucide-react";
 import { useOutletContext } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
