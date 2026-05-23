@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { LayoutDashboard, Users, FolderKanban, Ticket, CreditCard, BarChart3, Bell, Settings, Search, LogOut, Moon, Sun, User } from "lucide-react";
+import { LayoutDashboard, Users, FolderKanban, Ticket, CreditCard, BarChart3, Bell, Settings, Search, LogOut, Moon, Sun, User, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "../store/auth";
 
@@ -24,6 +24,7 @@ export default function AdminLayout() {
   const user = useAuthStore(state => state.user);
   const logout = useAuthStore(state => state.logout);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
   const profileDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -49,9 +50,17 @@ export default function AdminLayout() {
 
   return (
     <div className="flex h-screen bg-secondary/10 text-foreground overflow-hidden">
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+         <div 
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+         />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 border-r bg-background flex flex-col transition-all">
-        <div className="h-16 flex items-center px-6 border-b">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 border-r bg-background flex flex-col transition-transform duration-300 md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="h-16 flex items-center px-6 border-b shrink-0">
           <span className="font-bold text-lg tracking-tight">Softmade<span className="text-primary"> Admin</span></span>
         </div>
         <div className="flex-1 py-6 px-3 flex flex-col gap-1 overflow-y-auto">
@@ -61,6 +70,7 @@ export default function AdminLayout() {
               <Link
                 key={item.name}
                 to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   isActive ? "text-primary" : "text-muted-foreground hover:text-primary hover:bg-secondary/50"
                 }`}
@@ -85,6 +95,7 @@ export default function AdminLayout() {
               <Link
                 key={item.name}
                 to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-secondary/50"
                 }`}
@@ -100,14 +111,22 @@ export default function AdminLayout() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
-        <header className="h-16 border-b bg-background/50 backdrop-blur-sm flex items-center justify-between px-8 z-10">
-           <div className="relative w-64">
-              <Search className="w-4 h-4 absolute left-3 top-2.5 text-muted-foreground" />
-              <input 
-                 type="text" 
-                 placeholder="Search students, projects..." 
-                 className="w-full h-9 pl-9 pr-4 rounded-full bg-secondary/50 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
-              />
+        <header className="h-16 border-b bg-background/50 backdrop-blur-sm flex items-center justify-between px-4 md:px-8 z-10 shrink-0">
+           <div className="flex items-center gap-4">
+              <button 
+                 className="md:hidden p-2 rounded-md hover:bg-secondary text-muted-foreground"
+                 onClick={() => setIsMobileMenuOpen(true)}
+              >
+                 <Menu className="w-5 h-5" />
+              </button>
+              <div className="relative w-64 hidden md:block">
+                 <Search className="w-4 h-4 absolute left-3 top-2.5 text-muted-foreground" />
+                 <input 
+                    type="text" 
+                    placeholder="Search students, projects..." 
+                    className="w-full h-9 pl-9 pr-4 rounded-full bg-secondary/50 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
+                 />
+              </div>
            </div>
            <div className="flex items-center gap-4">
               <button onClick={toggleTheme} className="relative p-2 rounded-full hover:bg-secondary text-muted-foreground transition-colors">
@@ -156,7 +175,7 @@ export default function AdminLayout() {
            </div>
         </header>
         
-        <main className="flex-1 overflow-y-auto p-8">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">
            <Outlet />
         </main>
       </div>
