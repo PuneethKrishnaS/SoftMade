@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/auth";
 import LandingPage from "./pages/LandingPage";
+import Projects from "./pages/Projects";
 import Login from "./pages/Login";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Overview from "./pages/dashboard/Overview";
@@ -22,6 +23,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/projects" element={<Projects />} />
         <Route path="/login" element={<Login />} />
 
         {/* Dashboard Routes */}

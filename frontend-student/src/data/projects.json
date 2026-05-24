@@ -1,0 +1,56 @@
+[
+    {
+      "id": "proj-1",
+      "domain": "Artificial Intelligence",
+      "title": "AI Medical Diagnostic Assistant",
+      "tech": ["Python", "TensorFlow", "React"],
+      "shortDesc": "Predicts early-stage diseases from X-Ray images using CNNs.",
+      "longDesc": "A comprehensive backend solution integrating Convolutional Neural Networks trained on thousands of medical images to assist radiologists in early detection. Features include a React dashboard for doctors, secure patient data handling via Django, and automated PDF reporting formatted to university standards.",
+      "img": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      "id": "proj-2",
+      "domain": "Internet of Things",
+      "title": "Smart Crop Monitoring IoT",
+      "tech": ["Arduino", "Node.js", "React"],
+      "shortDesc": "Hardware integration for live soil moisture tracking.",
+      "longDesc": "An end-to-end IoT system designed for modern agriculture. This project uses Arduino microcontrollers and NodeMCU to collect real-time data on soil moisture, temperature, and humidity. The data is streamed via WebSockets to a React dashboard where users can visualize trends and receive automated irrigation alerts.",
+      "img": "https://images.unsplash.com/photo-1592982537447-6f2a6a0a241b?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      "id": "proj-3",
+      "domain": "Blockchain",
+      "title": "Decentralized Voting System",
+      "tech": ["Solidity", "Web3.js", "Node.js"],
+      "shortDesc": "A tamper-proof electoral system using Ethereum smart contracts.",
+      "longDesc": "A highly secure voting mechanism built entirely on the Ethereum blockchain. It eliminates the possibility of voter fraud through decentralized ledger verification. Includes an admin panel to register candidates and a voter portal where identities are verified cryptographically before casting a ballot.",
+      "img": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      "id": "proj-4",
+      "domain": "Cloud Computing",
+      "title": "Microservices Retail Platform",
+      "tech": ["Spring Boot", "React", "Docker"],
+      "shortDesc": "A scalable online shopping backend built with a microservices architecture.",
+      "longDesc": "Designed to mimic enterprise-level cloud platforms. This e-commerce application separates user authentication, product catalog management, and order processing into distinct microservices. Everything is containerized using Docker and orchestrated to handle high concurrency smoothly.",
+      "img": "https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      "id": "proj-5",
+      "domain": "Machine Learning",
+      "title": "Fake News Detection Engine",
+      "tech": ["NLP", "Scikit-learn", "Django"],
+      "shortDesc": "A text-classification engine that evaluates factual validity.",
+      "longDesc": "A Natural Language Processing tool that scrapes news articles and utilizes TF-IDF vectors alongside Logistic Regression to detect potential misinformation. It comes with a browser extension mock-up and a Django backend that calculates a 'truth probability score' for any submitted text.",
+      "img": "https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      "id": "proj-6",
+      "domain": "Cybersecurity",
+      "title": "Intrusion Detection System",
+      "tech": ["Python", "Snort", "React"],
+      "shortDesc": "A network monitoring tool that visualizes malicious payloads.",
+      "longDesc": "An advanced security project that acts as a honeypot and network sniffer. It intercepts network traffic in real-time, logs suspicious packet payloads using Snort signatures, and visualizes attack vectors on a React dashboard mapping the geolocation of potential threats.",
+      "img": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop"
+    }
+  ]
