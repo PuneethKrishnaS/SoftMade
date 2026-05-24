@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, ArrowRight, Code, Terminal, CheckSquare, MessageSquare, Briefcase, Zap, ShieldCheck } from "lucide-react";
+import { Search, X, ArrowRight, Code, Terminal } from "lucide-react";
 import projectsData from "../data/projects.json";
 
 export default function Projects() {
