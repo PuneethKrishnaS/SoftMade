@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, Ticket as TicketIcon, Search, MessageSquarePlus, MessageSquare, Send, ArrowRight, Paperclip, Loader2, File, Download } from "lucide-react";
+import { CheckCircle2, MessageSquarePlus, MessageSquare, Send, ArrowRight, Paperclip, Loader2, File, Download } from "lucide-react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { cn } from "@/lib/utils";
