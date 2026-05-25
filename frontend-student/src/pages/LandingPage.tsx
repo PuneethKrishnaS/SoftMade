@@ -74,7 +74,60 @@ export default function LandingPage() {
                 </div>
             </div>
         </section>
-
+        {/* 2.5 About Us Section */}
+        <section id="about" className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto">
+            <div className="flex flex-col lg:flex-row items-center gap-12 sm:gap-20">
+                <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="flex-1 w-full"
+                >
+                    <div className="inline-flex items-center rounded-full border border-border px-4 py-1.5 text-xs sm:text-sm font-medium text-muted-foreground bg-muted/30 backdrop-blur-sm mb-6">
+                        <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 text-foreground" />
+                        About Softmake
+                    </div>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-8">
+                        Bridging the gap between <span className="text-transparent bg-clip-text bg-gradient-to-r from-foreground to-foreground/50">academia and industry.</span>
+                    </h2>
+                    <div className="space-y-6 text-muted-foreground text-base sm:text-lg leading-relaxed">
+                        <p>
+                            Softmake IT Solutions was founded by a team of passionate software engineers and industry veterans who saw a critical flaw in how academic projects are handled. We realized that students were spending months on theoretical concepts but lacked the exposure to production-grade development standards.
+                        </p>
+                        <p>
+                            We are not just a consultancy. We are a full-scale digital ecosystem. Our mission is to empower engineering students by providing them with the architecture, source code, and professional mentorship they need to succeed in their final presentations and their future careers.
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+                            <div className="border-l-2 border-foreground pl-4">
+                                <h4 className="font-bold text-foreground mb-2">Our Mission</h4>
+                                <p className="text-sm">To elevate academic standards by providing transparent, industry-level tech guidance.</p>
+                            </div>
+                            <div className="border-l-2 border-foreground pl-4">
+                                <h4 className="font-bold text-foreground mb-2">Our Vision</h4>
+                                <p className="text-sm">To be the trusted technical partner for every engineering student globally.</p>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+                <motion.div 
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="flex-1 w-full aspect-square md:aspect-[4/3] relative group"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-tr from-foreground/10 to-transparent rounded-[32px] transform -rotate-3 scale-105 transition-transform duration-500 group-hover:rotate-0 group-hover:scale-100"></div>
+                    <div className="glass-card w-full h-full rounded-[32px] p-8 relative overflow-hidden flex flex-col justify-end border border-border/50">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-foreground opacity-5 blur-3xl rounded-full"></div>
+                        <img src="/logo.avif" alt="Softmake Team" className="w-24 h-24 sm:w-32 sm:h-32 object-contain mix-blend-multiply dark:mix-blend-normal mb-auto" />
+                        
+                        <div className="relative z-10">
+                            <div className="text-4xl sm:text-5xl font-bold text-foreground mb-2">500+</div>
+                            <p className="text-muted-foreground font-medium">Projects successfully delivered to engineering students nationwide.</p>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+        </section>
         {/* 3. Problem Section */}
         <section id="problem" className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12">
             <div className="flex flex-col lg:flex-row items-center gap-12 sm:gap-20">
@@ -416,7 +469,7 @@ export default function LandingPage() {
             <div>
                 <h4 className="font-semibold mb-4 text-sm sm:text-base">Company</h4>
                 <ul className="space-y-3 text-xs sm:text-sm text-muted-foreground">
-                    <li><a href="#problem" className="hover:text-foreground transition-colors">About Us</a></li>
+                    <li><a href="#about" className="hover:text-foreground transition-colors">About Us</a></li>
                     <li><a href="#services" className="hover:text-foreground transition-colors">Services</a></li>
                     <li><a href="mailto:softmadeitsolutions@gmail.com" className="hover:text-foreground transition-colors">Contact</a></li>
                 </ul>
