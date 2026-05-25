@@ -424,8 +424,8 @@ export default function LandingPage() {
             <div>
                 <h4 className="font-semibold mb-4 text-sm sm:text-base">Legal</h4>
                 <ul className="space-y-3 text-xs sm:text-sm text-muted-foreground">
-                    <li><a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a></li>
-                    <li><a href="#" className="hover:text-foreground transition-colors">Terms of Service</a></li>
+                    <li><Link to="/terms" target="_blank" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
+                    <li><Link to="/terms" target="_blank" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
                 </ul>
             </div>
         </div>

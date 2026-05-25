@@ -157,7 +157,8 @@ export default function Projects() {
           <div className="flex items-center gap-3">
              <img src="/logo.avif" alt="Softmake Logo" className="h-8 w-auto mix-blend-multiply dark:mix-blend-normal" />
           </div>
-          <div className="flex gap-8 text-sm font-medium text-muted-foreground">
+          <div className="flex flex-wrap gap-6 sm:gap-8 justify-center text-sm font-medium text-muted-foreground">
+             <Link to="/terms" target="_blank" className="hover:text-foreground transition-colors">Terms & Privacy</Link>
              <a href="#" className="hover:text-foreground transition-colors">Twitter</a>
              <a href="#" className="hover:text-foreground transition-colors">LinkedIn</a>
              <a href="#" className="hover:text-foreground transition-colors">Instagram</a>

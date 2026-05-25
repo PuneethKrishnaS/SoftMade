@@ -4,6 +4,7 @@ import { useAuthStore } from "./store/auth";
 import LandingPage from "./pages/LandingPage";
 import Projects from "./pages/Projects";
 import Login from "./pages/Login";
+import Terms from "./pages/Terms";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Overview from "./pages/dashboard/Overview";
 import Downloads from "./pages/dashboard/Downloads";
@@ -25,6 +26,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/terms" element={<Terms />} />
 
         {/* Dashboard Routes */}
         <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
