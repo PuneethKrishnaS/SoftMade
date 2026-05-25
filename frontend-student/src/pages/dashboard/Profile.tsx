@@ -94,73 +94,77 @@ export default function Profile() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300 max-w-8xl mx-auto">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-3xl font-bold tracking-tight">Group Profile & Details</h2>
-        <p className="text-muted-foreground">Manage your team members and update your college information.</p>
+    <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-200 max-w-[1600px] mx-auto pb-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 p-5 sm:p-6 bg-card/40 border border-border/40 rounded-[32px] shadow-xl backdrop-blur-sm relative overflow-hidden">
+         <div className="absolute top-0 right-0 p-32 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
+         <div className="flex flex-col gap-2 relative z-10">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Group Profile & Details</h2>
+          <p className="text-muted-foreground font-medium text-sm sm:text-base">Manage your team members and update your college information.</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
         
         {/* Left Column - Team Info */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="xl:col-span-2 space-y-5">
            {/* Project Context */}
-           <Card className="rounded-2xl shadow-sm border-primary/20 bg-primary/5">
-             <CardHeader className="pb-3">
-                <CardTitle className="text-primary flex items-center gap-2 text-lg">
-                  <Briefcase className="w-5 h-5" />
+           <Card className="rounded-[32px] shadow-xl border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 backdrop-blur-sm hover:-translate-y-1 transition-transform duration-200 overflow-hidden relative">
+             <div className="absolute top-0 right-0 p-24 bg-primary/10 blur-[60px] rounded-full pointer-events-none" />
+             <CardHeader className="pb-3 px-8 pt-8 relative z-10">
+                <CardTitle className="text-primary flex items-center gap-2.5 text-[11px] uppercase tracking-widest font-bold">
+                  <Briefcase className="w-4 h-4" />
                   Assigned Project
                 </CardTitle>
              </CardHeader>
-             <CardContent>
-                <div className="text-2xl font-bold">{activeProject?.title || 'No Project Assigned'}</div>
-                <p className="text-sm text-muted-foreground mt-1">This group is currently assigned to this project.</p>
+             <CardContent className="px-8 pb-8 relative z-10">
+                <div className="text-2xl font-extrabold tracking-tight text-foreground">{activeProject?.title || 'No Project Assigned'}</div>
+                <p className="text-sm text-foreground/70 mt-1 font-medium">This group is currently assigned to this project.</p>
              </CardContent>
            </Card>
 
            {/* Personal / College Details Form */}
-           <Card className="rounded-2xl shadow-sm border-border/50">
-             <CardHeader className="border-b bg-secondary/20">
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-primary" />
+           <Card className="rounded-[32px] border-border/40 shadow-xl bg-card/40 backdrop-blur-sm overflow-hidden hover:border-foreground/20 transition-colors duration-200">
+             <CardHeader className="px-6 py-4 border-b border-border/30 bg-background/20">
+                <CardTitle className="flex items-center gap-2.5 text-xs uppercase tracking-widest font-bold text-foreground">
+                  <Building2 className="w-4 h-4 text-primary" />
                   Group & College Details
                 </CardTitle>
-                <CardDescription>Only the team leader can update these details.</CardDescription>
+                <CardDescription className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mt-2">Only the team leader can update these details.</CardDescription>
              </CardHeader>
-             <CardContent className="space-y-6 pt-6">
+             <CardContent className="space-y-6 p-6">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   <div className="space-y-2">
-                     <label className="text-sm font-medium">Team Leader Name</label>
-                     <div className="relative">
-                       <UserCircle className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                       <Input className="pl-9 bg-secondary/50" value={user?.first_name || ""} readOnly />
+                   <div className="space-y-2.5">
+                     <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Team Leader Name</label>
+                     <div className="relative group">
+                       <UserCircle className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                       <Input className="pl-11 h-12 bg-background/50 backdrop-blur-md border-border/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl font-medium" value={user?.first_name || ""} readOnly />
                      </div>
                    </div>
-                   <div className="space-y-2">
-                     <label className="text-sm font-medium">Contact Number</label>
-                     <div className="relative">
-                       <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                       <Input className="pl-9" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                   <div className="space-y-2.5">
+                     <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Contact Number</label>
+                     <div className="relative group">
+                       <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                       <Input className="pl-11 h-12 bg-background/50 backdrop-blur-md border-border/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl font-medium" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
                      </div>
                    </div>
-                   <div className="space-y-2 md:col-span-2">
-                     <label className="text-sm font-medium">College Name</label>
-                     <div className="relative">
-                       <Building2 className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                       <Input className="pl-9" value={formData.college_name} onChange={e => setFormData({...formData, college_name: e.target.value})} />
+                   <div className="space-y-2.5 md:col-span-2">
+                     <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">College Name</label>
+                     <div className="relative group">
+                       <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+                       <Input className="pl-11 h-12 bg-background/50 backdrop-blur-md border-border/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl font-medium" value={formData.college_name} onChange={e => setFormData({...formData, college_name: e.target.value})} />
                      </div>
                    </div>
-                   <div className="space-y-2">
-                     <label className="text-sm font-medium">Department / Branch</label>
-                     <Input value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} />
+                   <div className="space-y-2.5">
+                     <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Department / Branch</label>
+                     <Input className="h-12 bg-background/50 backdrop-blur-md border-border/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl font-medium px-4" value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} />
                    </div>
-                   <div className="space-y-2">
-                     <label className="text-sm font-medium">Semester</label>
-                     <Input type="number" value={formData.semester} onChange={e => setFormData({...formData, semester: parseInt(e.target.value) || 1})} />
+                   <div className="space-y-2.5">
+                     <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Semester</label>
+                     <Input className="h-12 bg-background/50 backdrop-blur-md border-border/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl font-medium px-4" type="number" value={formData.semester} onChange={e => setFormData({...formData, semester: parseInt(e.target.value) || 1})} />
                    </div>
                 </div>
-                <div className="flex justify-end pt-4">
-                   <Button className="rounded-xl px-8" onClick={handleSaveProfile} disabled={isSaving}>
+                <div className="flex justify-end pt-6 border-t border-border/30">
+                   <Button className="rounded-xl h-12 px-8 font-bold shadow-lg hover:shadow-primary/20 transition-colors hover:-translate-y-0.5" onClick={handleSaveProfile} disabled={isSaving}>
                      {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                      Save Details
                    </Button>
@@ -170,44 +174,51 @@ export default function Profile() {
         </div>
 
         {/* Right Column - Members Management */}
-        <div className="space-y-6">
-           <Card className="rounded-2xl shadow-sm border-border/50">
-              <CardHeader className="border-b bg-secondary/20">
-                 <CardTitle className="flex items-center gap-2">
-                   <Users className="w-5 h-5 text-primary" />
+        <div className="space-y-5">
+           <Card className="rounded-[32px] border-border/40 shadow-xl bg-card/40 backdrop-blur-sm overflow-hidden hover:border-foreground/20 transition-colors duration-200 hover:-translate-y-1">
+              <CardHeader className="px-6 py-4 border-b border-border/30 bg-background/20">
+                 <CardTitle className="flex items-center gap-2.5 text-xs uppercase tracking-widest font-bold text-foreground">
+                   <Users className="w-4 h-4 text-primary" />
                    Team Members
                  </CardTitle>
-                 <CardDescription>Max 4 members allowed</CardDescription>
+                 <CardDescription className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mt-2">Max 4 members allowed</CardDescription>
               </CardHeader>
-              <CardContent className="pt-6 space-y-6">
+              <CardContent className="p-6 space-y-6">
                  {/* Member List */}
                  <div className="space-y-4">
                     {students.length > 0 ? students.map(member => (
-                       <div key={member.id} className="flex items-center justify-between p-3 rounded-xl border bg-card hover:bg-secondary/20 transition-colors">
-                          <div>
-                            <div className="font-medium text-sm">{member.user?.first_name || member.usn}</div>
-                            <div className="text-xs text-muted-foreground">{member.usn} - {member.department}</div>
+                       <div key={member.id} className="flex items-center justify-between p-4 rounded-2xl border border-border/50 bg-background/50 hover:bg-card/80 shadow-sm transition-colors group">
+                          <div className="flex items-center gap-4">
+                             <div className="w-10 h-10 rounded-xl bg-secondary text-secondary-foreground flex items-center justify-center font-bold text-sm shrink-0 border border-border/50 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                                {member.user?.first_name ? member.user.first_name.charAt(0).toUpperCase() : 'M'}
+                             </div>
+                             <div>
+                               <div className="font-bold text-sm text-foreground/90 group-hover:text-foreground transition-colors">{member.user?.first_name || member.usn}</div>
+                               <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mt-0.5">{member.usn} - {member.department}</div>
+                             </div>
                           </div>
-                          <div className={`text-xs px-2 py-1 rounded-md font-medium ${member.usn === studentProfile?.usn ? 'bg-primary/10 text-primary' : 'bg-secondary text-secondary-foreground'}`}>
+                          <div className={`text-[10px] uppercase tracking-widest px-3 py-1 rounded-lg font-bold border ${member.usn === studentProfile?.usn ? 'bg-primary/10 text-primary border-primary/20' : 'bg-secondary/50 text-secondary-foreground border-border/50'}`}>
                              {member.usn === studentProfile?.usn ? 'You' : 'Member'}
                           </div>
                        </div>
                     )) : (
-                       <div className="text-sm text-muted-foreground py-4 text-center">No members found.</div>
+                       <div className="text-xs font-semibold text-muted-foreground py-8 text-center uppercase tracking-widest border border-dashed border-border/50 rounded-2xl bg-background/30">No members found.</div>
                     )}
                  </div>
 
                  {/* Add Member form */}
-                 <div className="p-4 rounded-xl bg-secondary/30 border border-dashed border-border space-y-4">
-                    <h4 className="text-sm font-semibold flex items-center gap-2">
-                       <UserPlus className="w-4 h-4" /> Add Existing Student
-                    </h4>
-                    <p className="text-xs text-muted-foreground">Enter the USN of a registered student to add them to your project.</p>
-                     <div className="space-y-3">
-                       <div className="flex gap-2">
+                 <div className="p-6 rounded-2xl bg-background/40 border border-border/50 shadow-sm space-y-6">
+                    <div>
+                       <h4 className="text-sm font-bold flex items-center gap-2 mb-1">
+                          <UserPlus className="w-4 h-4 text-primary" /> Add Existing Student
+                       </h4>
+                       <p className="text-[11px] font-medium text-muted-foreground leading-relaxed">Enter the USN of a registered student to add them to your project.</p>
+                    </div>
+                     <div className="space-y-4">
+                       <div className="flex gap-3">
                          <Input 
-                           placeholder="University Serial Number (USN)" 
-                           className="bg-background h-9 text-sm uppercase" 
+                           placeholder="Enter USN" 
+                           className="bg-background/80 h-11 text-sm uppercase rounded-xl border-border/50 focus:border-primary focus:ring-1 focus:ring-primary font-medium px-4" 
                            value={newUsn}
                            onChange={e => setNewUsn(e.target.value)}
                            disabled={!!studentPreview}
@@ -215,7 +226,7 @@ export default function Profile() {
                          {!studentPreview ? (
                             <Button 
                                variant="secondary" 
-                               className="h-9 px-4 text-sm shadow-sm"
+                               className="h-11 px-6 text-xs font-bold uppercase tracking-widest shadow-sm rounded-xl border-border/50 bg-secondary/80 hover:bg-secondary"
                                onClick={handleVerifyStudent} 
                                disabled={isPreviewing || !newUsn.trim()}
                             >
@@ -224,7 +235,7 @@ export default function Profile() {
                          ) : (
                             <Button 
                                variant="outline" 
-                               className="h-9 px-4 text-sm"
+                               className="h-11 px-6 text-xs font-bold uppercase tracking-widest shadow-sm rounded-xl border-border/50 hover:bg-secondary/80"
                                onClick={() => setStudentPreview(null)}
                             >
                                Change
@@ -233,16 +244,16 @@ export default function Profile() {
                        </div>
                        
                        {studentPreview && (
-                          <div className="p-3 bg-card rounded-md border border-border">
-                             <h4 className="font-semibold text-sm">{studentPreview.user?.first_name || studentPreview.usn}</h4>
-                             <p className="text-xs text-muted-foreground mt-1">{studentPreview.college_name}</p>
-                             <p className="text-xs text-muted-foreground">{studentPreview.department} - Sem {studentPreview.semester}</p>
+                          <div className="p-5 bg-card/80 rounded-2xl border border-border/50 shadow-sm">
+                             <h4 className="font-extrabold text-sm mb-1">{studentPreview.user?.first_name || studentPreview.usn}</h4>
+                             <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-1">{studentPreview.college_name}</p>
+                             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">{studentPreview.department} - Sem {studentPreview.semester}</p>
                           </div>
                        )}
 
                        <Button 
                          variant="default" 
-                         className="w-full h-9 rounded-lg text-sm shadow-sm"
+                         className="w-full h-12 rounded-xl text-xs uppercase tracking-widest font-bold shadow-lg hover:shadow-primary/20 transition-colors hover:-translate-y-0.5"
                          onClick={handleAddMember}
                          disabled={isAdding || !studentPreview}
                        >

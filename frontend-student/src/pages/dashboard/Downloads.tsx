@@ -243,44 +243,45 @@ export default function Downloads() {
    const totalFiles = countFiles(treeData);
 
    return (
-      <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500 w-full pb-8">
-         <div className="flex items-center justify-between p-4 bg-card/60 border border-border/40 rounded-xl shadow-sm backdrop-blur-sm">
-            <div className="flex items-center gap-4">
-               <div>
-                  <h2 className="text-sm font-bold uppercase tracking-widest text-foreground">Project Resources</h2>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{activeProject.title}</p>
-               </div>
+      <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-200 w-full pb-10 max-w-[1600px] mx-auto">
+         
+         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 p-5 sm:p-6 bg-card/40 border border-border/40 rounded-[32px] shadow-xl backdrop-blur-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-32 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
+            <div className="flex flex-col gap-2 relative z-10">
+               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Project Resources</h2>
+               <p className="text-muted-foreground font-medium text-sm sm:text-base">View and download files related to your project.</p>
             </div>
-            <div className="flex items-center gap-3">
-               <Badge variant="outline" className="bg-background text-[10px] font-bold uppercase tracking-widest border-border px-3 py-1 shadow-sm">
+            <div className="flex flex-wrap items-center gap-4 relative z-10">
+               <Badge variant="outline" className="bg-background/50 text-xs font-bold uppercase tracking-widest border-border/50 px-4 py-1.5 shadow-sm rounded-xl">
                   {totalFiles} Files
                </Badge>
                <Button 
                   size="sm" 
                   onClick={() => window.open(`https://github.com/${activeProject.github_repo}/archive/HEAD.zip`, '_blank')}
-                  className="h-7 text-xs px-3 bg-primary text-primary-foreground hover:bg-primary/90"
+                  className="h-12 text-xs font-bold px-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl shadow-lg hover:shadow-primary/20 transition-colors hover:-translate-y-0.5"
                >
-                  <Download className="w-3.5 h-3.5 mr-1.5" />
+                  <Download className="w-4 h-4 mr-2" />
                   Download ZIP
                </Button>
             </div>
          </div>
 
-         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[calc(100vh-12rem)] min-h-[400px]">
+         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-14rem)] min-h-[500px]">
+            {/* Sidebar File Tree */}
             <div className="lg:col-span-3 h-full min-h-0">
-               <Card className="rounded-xl border-border/40 shadow-sm bg-card/60 backdrop-blur-sm h-full flex flex-col overflow-hidden">
-                  <CardHeader className="px-5 py-3 border-b border-border/40 bg-background/50 flex flex-row items-center justify-between shrink-0">
-                     <CardTitle className="text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 text-foreground">
-                        <FolderOpen className="w-3.5 h-3.5" /> Repository
+               <Card className="rounded-[32px] border-border/40 shadow-xl bg-card/40 backdrop-blur-sm h-full flex flex-col overflow-hidden hover:border-foreground/20 transition-colors duration-200">
+                  <CardHeader className="px-6 py-4 border-b border-border/30 bg-background/20 flex flex-row items-center justify-between shrink-0">
+                     <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2.5 text-muted-foreground">
+                        <FolderOpen className="w-4 h-4 text-primary" /> Repository
                      </CardTitle>
-                     {loadingDocs && <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />}
+                     {loadingDocs && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
                   </CardHeader>
-                  <CardContent className="p-0 flex-1 overflow-y-auto min-h-0">
-                     <div className="py-2">
+                  <CardContent className="p-0 flex-1 overflow-y-auto min-h-0 custom-scrollbar bg-background/10">
+                     <div className="py-3 px-2">
                         {loadingDocs ? (
-                           <div className="p-8 flex flex-col items-center justify-center text-muted-foreground space-y-3">
-                              <Loader2 className="w-5 h-5 animate-spin" />
-                              <span className="text-[10px] uppercase tracking-widest font-bold">Loading Structure...</span>
+                           <div className="p-6 flex flex-col items-center justify-center text-muted-foreground space-y-4">
+                              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                              <span className="text-xs uppercase tracking-widest font-bold">Loading Structure...</span>
                            </div>
                         ) : treeData.length > 0 ? (
                            treeData.map((node) => (
@@ -292,50 +293,52 @@ export default function Downloads() {
                               />
                            ))
                         ) : (
-                           <div className="p-8 text-center text-muted-foreground text-[10px] uppercase tracking-widest">No resources found.</div>
+                           <div className="p-6 text-center text-muted-foreground text-xs uppercase tracking-widest font-semibold border border-dashed border-border/50 rounded-2xl m-4 bg-background/30">No resources found.</div>
                         )}
                      </div>
                   </CardContent>
                </Card>
             </div>
 
+            {/* Main Viewer */}
             <div className="lg:col-span-9 h-full min-h-0 min-w-0">
-               <Card className="rounded-xl border-border/40 shadow-sm bg-card/60 backdrop-blur-sm h-full flex flex-col overflow-hidden">
-                  <CardHeader className="px-5 py-3 border-b border-border/40 bg-background/50 flex flex-row items-center justify-between shrink-0">
-                     <CardTitle className="text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 text-foreground">
-                        <Terminal className="w-3.5 h-3.5" /> {selectedFile ? `Viewing File: ${selectedFile.name}` : 'Project Documentation (README)'}
+               <Card className="rounded-[32px] border-border/40 shadow-xl bg-card/40 backdrop-blur-sm h-full flex flex-col overflow-hidden hover:border-foreground/20 transition-colors duration-200">
+                  <CardHeader className="px-6 py-4 border-b border-border/30 bg-background/20 flex flex-row items-center justify-between shrink-0">
+                     <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2.5 text-foreground/80">
+                        <Terminal className="w-4 h-4 text-primary" /> 
+                        <span className="truncate max-w-[200px] sm:max-w-md">{selectedFile ? `Viewing: ${selectedFile.name}` : 'Project Documentation (README)'}</span>
                      </CardTitle>
                      {selectedFile ? (
-                        <div className="flex items-center gap-2">
-                           <Badge variant="outline" className="text-[9px] uppercase tracking-widest px-1.5 py-0 h-4 border-border bg-secondary/50">
+                        <div className="flex items-center gap-3">
+                           <Badge variant="outline" className="text-[10px] uppercase tracking-widest px-2 py-0.5 border-border/50 bg-secondary/80 font-bold rounded-lg hidden sm:inline-flex">
                               {selectedFile.name.split('.').pop() || 'File'}
                            </Badge>
-                           <Button size="sm" variant="ghost" className="h-5 text-[9px] uppercase tracking-widest px-2" onClick={() => setSelectedFile(null)}>Close</Button>
+                           <Button size="sm" variant="ghost" className="h-7 text-[10px] font-bold uppercase tracking-widest px-3 rounded-lg hover:bg-secondary/80" onClick={() => setSelectedFile(null)}>Close</Button>
                         </div>
                      ) : (
-                        <Badge variant="outline" className="text-[9px] uppercase tracking-widest px-1.5 py-0 h-4 border-border bg-secondary/50">
+                        <Badge variant="outline" className="text-[10px] uppercase tracking-widest px-2 py-0.5 border-border/50 bg-secondary/80 font-bold rounded-lg">
                            Markdown
                         </Badge>
                      )}
                   </CardHeader>
-                  <CardContent className="p-0 flex-1 overflow-hidden relative min-h-0">
+                  <CardContent className="p-0 flex-1 overflow-hidden relative min-h-0 bg-background/20">
                      {selectedFile ? (
                         selectedFile.loading ? (
-                           <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground space-y-3">
-                              <Loader2 className="w-5 h-5 animate-spin" />
+                           <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground space-y-4">
+                              <Loader2 className="w-6 h-6 animate-spin text-primary" />
                               <span className="text-[10px] uppercase tracking-widest font-bold">Loading File...</span>
                            </div>
                         ) : (
-                           <div className="h-full overflow-y-auto p-4 bg-background/30 custom-scrollbar">
+                           <div className="h-full overflow-y-auto p-6 md:p-8 custom-scrollbar">
                               {selectedFile.name.toLowerCase().endsWith('.md') ? (
-                                 <article className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 prose-code:text-xs prose-code:bg-secondary prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-pre:bg-secondary/50 prose-pre:border prose-pre:border-border/50">
+                                 <article className="prose prose-sm md:prose-base dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-a:underline-offset-4 prose-code:text-xs prose-code:bg-secondary/80 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-pre:bg-secondary/50 prose-pre:border prose-pre:border-border/50 prose-pre:backdrop-blur-md">
                                     <ReactMarkdown>{selectedFile.content}</ReactMarkdown>
                                  </article>
                               ) : (
                                  <SyntaxHighlighter 
                                     language={selectedFile.name.split('.').pop() || 'text'} 
                                     style={stackoverflowLight}
-                                    customStyle={{ margin: 0, padding: '1rem', borderRadius: '0.375rem', fontSize: '13px', background: 'hsl(var(--secondary) / 0.3)' }}
+                                    customStyle={{ margin: 0, padding: '1.5rem', borderRadius: '1rem', fontSize: '14px', background: 'hsl(var(--secondary) / 0.5)', border: '1px solid hsl(var(--border) / 0.5)' }}
                                     showLineNumbers={true}
                                  >
                                     {selectedFile.content}
@@ -344,23 +347,23 @@ export default function Downloads() {
                            </div>
                         )
                      ) : loadingReadme ? (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground space-y-3">
-                           <Loader2 className="w-5 h-5 animate-spin" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground space-y-4">
+                           <Loader2 className="w-6 h-6 animate-spin text-primary" />
                            <span className="text-[10px] uppercase tracking-widest font-bold">Reading Documentation...</span>
                         </div>
                      ) : readme ? (
-                        <div className="h-full overflow-y-auto p-8 bg-background/30 custom-scrollbar">
-                           <article className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 prose-code:text-xs prose-code:bg-secondary prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-pre:bg-secondary/50 prose-pre:border prose-pre:border-border/50">
+                        <div className="h-full overflow-y-auto p-6 md:p-10 custom-scrollbar">
+                           <article className="prose prose-sm md:prose-base dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-a:underline-offset-4 prose-code:text-xs prose-code:bg-secondary/80 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-pre:bg-secondary/50 prose-pre:border prose-pre:border-border/50 prose-pre:backdrop-blur-md">
                               <ReactMarkdown>{readme}</ReactMarkdown>
                            </article>
                         </div>
                      ) : (
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
-                           <div className="w-12 h-12 bg-secondary/50 rounded-full flex items-center justify-center mb-3">
-                              <Activity className="w-5 h-5 opacity-50" />
+                           <div className="w-16 h-16 bg-secondary/50 rounded-2xl flex items-center justify-center mb-4 border border-border/50 shadow-inner">
+                              <Activity className="w-6 h-6 opacity-50" />
                            </div>
-                           <p className="text-[10px] uppercase tracking-widest font-bold">No documentation available.</p>
-                           <p className="text-[9px] mt-1 text-muted-foreground/70 uppercase tracking-widest">A README.md file is missing from the repository root.</p>
+                           <p className="text-[11px] uppercase tracking-widest font-bold">No documentation available.</p>
+                           <p className="text-[10px] mt-2 text-muted-foreground/70 uppercase tracking-widest font-medium">A README.md file is missing from the repository root.</p>
                         </div>
                      )}
                   </CardContent>

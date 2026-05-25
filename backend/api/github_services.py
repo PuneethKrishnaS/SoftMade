@@ -71,3 +71,19 @@ def get_project_readme(repo_name):
         return base64.b64decode(readme.content).decode('utf-8')
     except GithubException:
         return None
+
+def upload_file_to_github(repo_name, file_name, content_bytes, commit_message="Upload attachment"):
+    client = get_github_client()
+    if not client or not repo_name:
+        return None, "GitHub client not configured."
+        
+    try:
+        repo = client.get_repo(repo_name)
+        path = f"uploads/tickets/{file_name}"
+        # Create file in GitHub
+        res = repo.create_file(path, commit_message, content_bytes, branch="main")
+        # return the raw download url
+        return res['content'].download_url, None
+    except GithubException as e:
+        print("GitHub Upload Error:", e.data)
+        return None, e.data.get('message', str(e))
