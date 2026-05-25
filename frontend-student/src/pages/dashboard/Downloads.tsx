@@ -19,7 +19,7 @@ interface TreeNode {
 
 function getFileIcon(filename: string) {
    const ext = filename.split('.').pop()?.toLowerCase();
-   switch(ext) {
+   switch (ext) {
       case 'ts':
       case 'tsx':
          return <FileType2 className="w-4 h-4 text-blue-500" />;
@@ -99,7 +99,7 @@ function FileNodeViewer({ node, level = 0, onSelectFile, selectedPath }: { node:
 
    return (
       <div className="w-full">
-         <div 
+         <div
             className={`flex items-center justify-between py-2 px-3 hover:bg-secondary/40 cursor-pointer group ${isSelected ? 'bg-secondary/60' : ''}`}
             style={{ paddingLeft: `${level * 18 + 12}px` }}
             onClick={() => {
@@ -127,16 +127,16 @@ function FileNodeViewer({ node, level = 0, onSelectFile, selectedPath }: { node:
                   {node.name}
                </span>
             </div>
-            
+
          </div>
 
          {isFolder && expanded && node.children && (
             <div className="flex flex-col">
                {node.children.map((child) => (
-                  <FileNodeViewer 
-                     key={child.path} 
-                     node={child} 
-                     level={level + 1} 
+                  <FileNodeViewer
+                     key={child.path}
+                     node={child}
+                     level={level + 1}
                      onSelectFile={onSelectFile}
                      selectedPath={selectedPath}
                   />
@@ -153,7 +153,7 @@ export default function Downloads() {
    const [readme, setReadme] = useState<string>("");
    const [loadingDocs, setLoadingDocs] = useState(false);
    const [loadingReadme, setLoadingReadme] = useState(true);
-   const [selectedFile, setSelectedFile] = useState<{name: string, content: string, loading: boolean, path: string} | null>(null);
+   const [selectedFile, setSelectedFile] = useState<{ name: string, content: string, loading: boolean, path: string } | null>(null);
 
    useEffect(() => {
       if (activeProject?.github_repo) {
@@ -244,8 +244,8 @@ export default function Downloads() {
 
    return (
       <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-200 w-full pb-10 max-w-[1600px] mx-auto">
-         
-         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 p-5 sm:p-6 bg-card/40 border border-border/40 rounded-[32px] shadow-xl backdrop-blur-sm relative overflow-hidden">
+
+         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 p-5 sm:p-6 bg-card/40 border border-border/40 rounded-md shadow-xl backdrop-blur-sm relative overflow-hidden">
             <div className="absolute top-0 right-0 p-32 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
             <div className="flex flex-col gap-2 relative z-10">
                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Project Resources</h2>
@@ -255,8 +255,8 @@ export default function Downloads() {
                <Badge variant="outline" className="bg-background/50 text-xs font-bold uppercase tracking-widest border-border/50 px-4 py-1.5 shadow-sm rounded-xl">
                   {totalFiles} Files
                </Badge>
-               <Button 
-                  size="sm" 
+               <Button
+                  size="sm"
                   onClick={() => window.open(`https://github.com/${activeProject.github_repo}/archive/HEAD.zip`, '_blank')}
                   className="h-12 text-xs font-bold px-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl shadow-lg hover:shadow-primary/20 transition-colors hover:-translate-y-0.5"
                >
@@ -269,7 +269,7 @@ export default function Downloads() {
          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-14rem)] min-h-[500px]">
             {/* Sidebar File Tree */}
             <div className="lg:col-span-3 h-full min-h-0">
-               <Card className="rounded-[32px] border-border/40 shadow-xl bg-card/40 backdrop-blur-sm h-full flex flex-col overflow-hidden hover:border-foreground/20 transition-colors duration-200">
+               <Card className="rounded-md border-border/40 shadow-xl bg-card/40 backdrop-blur-sm h-full flex flex-col overflow-hidden hover:border-foreground/20 transition-colors duration-200">
                   <CardHeader className="px-6 py-4 border-b border-border/30 bg-background/20 flex flex-row items-center justify-between shrink-0">
                      <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2.5 text-muted-foreground">
                         <FolderOpen className="w-4 h-4 text-primary" /> Repository
@@ -285,9 +285,9 @@ export default function Downloads() {
                            </div>
                         ) : treeData.length > 0 ? (
                            treeData.map((node) => (
-                              <FileNodeViewer 
-                                 key={node.path} 
-                                 node={node} 
+                              <FileNodeViewer
+                                 key={node.path}
+                                 node={node}
                                  onSelectFile={handleSelectFile}
                                  selectedPath={selectedFile?.path}
                               />
@@ -302,10 +302,10 @@ export default function Downloads() {
 
             {/* Main Viewer */}
             <div className="lg:col-span-9 h-full min-h-0 min-w-0">
-               <Card className="rounded-[32px] border-border/40 shadow-xl bg-card/40 backdrop-blur-sm h-full flex flex-col overflow-hidden hover:border-foreground/20 transition-colors duration-200">
+               <Card className="rounded-md border-border/40 shadow-xl bg-card/40 backdrop-blur-sm h-full flex flex-col overflow-hidden hover:border-foreground/20 transition-colors duration-200">
                   <CardHeader className="px-6 py-4 border-b border-border/30 bg-background/20 flex flex-row items-center justify-between shrink-0">
                      <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2.5 text-foreground/80">
-                        <Terminal className="w-4 h-4 text-primary" /> 
+                        <Terminal className="w-4 h-4 text-primary" />
                         <span className="truncate max-w-[200px] sm:max-w-md">{selectedFile ? `Viewing: ${selectedFile.name}` : 'Project Documentation (README)'}</span>
                      </CardTitle>
                      {selectedFile ? (
@@ -335,8 +335,8 @@ export default function Downloads() {
                                     <ReactMarkdown>{selectedFile.content}</ReactMarkdown>
                                  </article>
                               ) : (
-                                 <SyntaxHighlighter 
-                                    language={selectedFile.name.split('.').pop() || 'text'} 
+                                 <SyntaxHighlighter
+                                    language={selectedFile.name.split('.').pop() || 'text'}
                                     style={stackoverflowLight}
                                     customStyle={{ margin: 0, padding: '1.5rem', borderRadius: '1rem', fontSize: '14px', background: 'hsl(var(--secondary) / 0.5)', border: '1px solid hsl(var(--border) / 0.5)' }}
                                     showLineNumbers={true}

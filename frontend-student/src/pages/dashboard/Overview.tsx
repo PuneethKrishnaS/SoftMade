@@ -83,7 +83,7 @@ export default function Overview() {
 
          {/* 1. HERO SECTION */}
          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-            <Card className="xl:col-span-2 rounded-[32px] border-border/40 shadow-xl bg-card/40 backdrop-blur-sm overflow-hidden relative group hover:border-foreground/20 transition-colors duration-200">
+            <Card className="xl:col-span-2 rounded-md border-border/40 shadow-xl bg-card/40 backdrop-blur-sm overflow-hidden relative group hover:border-foreground/20 transition-colors duration-200">
                <div className="absolute top-0 right-0 p-32 bg-primary/10 blur-[120px] rounded-full pointer-events-none transition-opacity group-hover:opacity-100 opacity-60" />
                <CardContent className="p-6 sm:p-8 relative z-10 flex flex-col justify-between h-full space-y-6">
                   <div className="space-y-4">
@@ -127,7 +127,7 @@ export default function Overview() {
             </Card>
 
             {/* Hero Sidebar: Milestone & Action */}
-            <Card className="rounded-[32px] border-border/40 shadow-xl bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 backdrop-blur-sm hover:border-primary/40 transition-colors duration-200 hover:-translate-y-1">
+            <Card className="rounded-md border-border/40 shadow-xl bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 backdrop-blur-sm hover:border-primary/40 transition-colors duration-200 hover:-translate-y-1">
                <CardContent className="p-6 sm:p-8 flex flex-col justify-center h-full space-y-8">
                   <div>
                      <h3 className="text-[11px] font-bold uppercase tracking-widest text-primary/80 mb-2">Current Phase</h3>
@@ -161,7 +161,7 @@ export default function Overview() {
          </div>
 
          {/* 2. PIPELINE STEPPER (Clean, readable horizontal timeline) */}
-         <Card className="rounded-[32px] border-border/40 shadow-xl bg-card/40 backdrop-blur-sm overflow-hidden hover:border-foreground/20 transition-colors duration-200">
+         <Card className="rounded-md border-border/40 shadow-xl bg-card/40 backdrop-blur-sm overflow-hidden hover:border-foreground/20 transition-colors duration-200">
             <CardContent className="p-6 overflow-x-auto custom-scrollbar">
                <div className="flex items-start justify-between min-w-[900px] max-w-full">
                   {PIPELINE_PHASES.map((phase, idx) => {
@@ -194,7 +194,7 @@ export default function Overview() {
          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
 
             {/* Left Col: Recent Activity */}
-            <Card className="xl:col-span-2 rounded-[32px] border-border/40 shadow-xl bg-card/40 backdrop-blur-sm hover:border-foreground/20 transition-colors duration-200">
+            <Card className="xl:col-span-2 rounded-md border-border/40 shadow-xl bg-card/40 backdrop-blur-sm hover:border-foreground/20 transition-colors duration-200">
                <CardHeader className="px-6 py-4 border-b border-border/30 flex flex-row items-center justify-between bg-background/20 rounded-t-[32px]">
                   <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Activity Log</CardTitle>
                   <Badge variant="secondary" className="font-bold text-[10px] uppercase tracking-widest bg-secondary/80 border border-border/50 px-3 py-1">{recentActivities.length} Recent Events</Badge>
@@ -227,7 +227,7 @@ export default function Overview() {
             <div className="space-y-5">
 
                {/* Finances */}
-               <Card className="rounded-[32px] border-border/40 shadow-sm bg-card/40">
+               <Card className="rounded-md border-border/40 shadow-sm bg-card/40">
                   <CardHeader className="px-6 py-4 border-b border-border/30 bg-background/20">
                      <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2.5 text-muted-foreground">
                         <div className="p-1.5 bg-emerald-500/10 rounded-lg text-emerald-500"><IndianRupee className="w-4 h-4" /></div> Financial Overview
@@ -259,7 +259,7 @@ export default function Overview() {
                </Card>
 
                {/* Team */}
-               <Card className="rounded-[32px] border-border/40 shadow-sm bg-card/40">
+               <Card className="rounded-md border-border/40 shadow-sm bg-card/40">
                   <CardHeader className="px-6 py-4 border-b border-border/30 bg-background/20">
                      <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2.5 text-muted-foreground">
                         <div className="p-1.5 bg-blue-500/10 rounded-lg text-blue-500"><Users className="w-4 h-4" /></div> Team Workspace
