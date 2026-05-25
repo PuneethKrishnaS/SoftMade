@@ -75,7 +75,7 @@ export default function LandingPage() {
             </div>
         </section>
         {/* 2.5 About Us Section */}
-        <section id="about" className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto">
+        <section id="about" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto">
             <div className="flex flex-col lg:flex-row items-center gap-12 sm:gap-20">
                 <motion.div 
                     initial={{ opacity: 0, x: -20 }}
@@ -129,7 +129,7 @@ export default function LandingPage() {
             </div>
         </section>
         {/* 3. Problem Section */}
-        <section id="problem" className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12">
+        <section id="problem" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12">
             <div className="flex flex-col lg:flex-row items-center gap-12 sm:gap-20">
                 <div className="flex-1 space-y-6 sm:space-y-8">
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-tight">Academic Projects Shouldn’t Feel Overwhelming.</h2>
@@ -157,7 +157,7 @@ export default function LandingPage() {
         </section>
 
         {/* 4. Solution Section */}
-        <section className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12 text-center bg-foreground text-background rounded-[32px] sm:rounded-[40px] mx-4 lg:mx-12 relative overflow-hidden">
+        <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12 text-center bg-foreground text-background rounded-[32px] sm:rounded-[40px] mx-4 lg:mx-12 relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent opacity-50"></div>
             <div className="relative z-10 max-w-4xl mx-auto space-y-12 sm:space-y-16">
                 <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight">A Complete Digital Ecosystem <br className="hidden md:block"/>For Academic Projects</h2>
@@ -181,7 +181,7 @@ export default function LandingPage() {
         </section>
 
         {/* 5. Platform Showcase (Bento Style) */}
-        <section className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12 max-w-[1440px] mx-auto">
+        <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12 max-w-[1440px] mx-auto">
             <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-4 sm:space-y-6">
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Everything you need, built in.</h2>
                 <p className="text-base sm:text-lg text-muted-foreground">This is not a normal consultancy. Softmake provides a full-scale digital ecosystem to track, manage, and download your project artifacts.</p>
@@ -238,29 +238,47 @@ export default function LandingPage() {
         </section>
 
         {/* 6. Features Grid */}
-        <section id="features" className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-6xl mx-auto">
-                <div className="col-span-1 sm:col-span-2 glass-card rounded-[24px] p-6 sm:p-8 space-y-6 flex flex-col justify-end min-h-[250px] sm:min-h-[300px] relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <LayoutDashboard className="w-8 h-8 text-foreground relative z-10" />
-                    <h3 className="text-xl sm:text-2xl font-bold relative z-10">Real-time tracking</h3>
-                    <p className="text-muted-foreground relative z-10">Monitor your project milestones live as our developers commit code and update statuses.</p>
+        <section id="features" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12">
+            <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">Core Platform Features</h2>
+                <p className="text-muted-foreground text-base sm:text-lg">Designed specifically for the modern student developer.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                <div className="glass-card rounded-[32px] p-8 sm:p-10 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] group overflow-hidden relative border border-border/50 hover:border-foreground/30 transition-colors">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="relative z-10 space-y-4">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <LayoutDashboard className="w-6 h-6 sm:w-7 sm:h-7" />
+                        </div>
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-tight">Real-time tracking</h3>
+                        <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">Monitor your project milestones live as our developers commit code and update statuses in real-time.</p>
+                    </div>
                 </div>
-                <div className="col-span-1 glass-card rounded-[24px] p-6 sm:p-8 space-y-4 sm:space-y-6 min-h-[200px] sm:min-h-[300px]">
-                    <Zap className="w-8 h-8 text-foreground" />
-                    <h3 className="text-lg sm:text-xl font-bold">Push notifications</h3>
-                    <p className="text-muted-foreground">Instant updates on your mobile device.</p>
+                <div className="glass-card rounded-[32px] p-8 sm:p-10 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] group overflow-hidden relative border border-border/50 hover:border-foreground/30 transition-colors">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="relative z-10 space-y-4">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <Zap className="w-6 h-6 sm:w-7 sm:h-7" />
+                        </div>
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-tight">Push notifications</h3>
+                        <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">Get instant alerts and updates on your mobile device whenever significant progress is made.</p>
+                    </div>
                 </div>
-                <div className="col-span-1 glass-card rounded-[24px] p-6 sm:p-8 space-y-4 sm:space-y-6 min-h-[200px] sm:min-h-[300px]">
-                    <Cloud className="w-8 h-8 text-foreground" />
-                    <h3 className="text-lg sm:text-xl font-bold">File management</h3>
-                    <p className="text-muted-foreground">Centralized repository for documents.</p>
+                <div className="glass-card rounded-[32px] p-8 sm:p-10 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] group overflow-hidden relative border border-border/50 hover:border-foreground/30 transition-colors">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="relative z-10 space-y-4">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <Cloud className="w-6 h-6 sm:w-7 sm:h-7" />
+                        </div>
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-tight">File management</h3>
+                        <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">A centralized repository for all your documents, diagrams, and codebase, available for download anytime.</p>
+                    </div>
                 </div>
             </div>
         </section>
 
         {/* 7. Workflow - Vertical Timeline */}
-        <section id="workflow" className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12 bg-muted/30 border-y border-border">
+        <section id="workflow" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12 bg-muted/30 border-y border-border">
             <div className="max-w-3xl mx-auto">
                 <div className="text-center mb-12 sm:mb-16">
                     <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">How it works</h2>
@@ -289,7 +307,7 @@ export default function LandingPage() {
         </section>
 
         {/* 8. Services */}
-        <section id="services" className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12">
+        <section id="services" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12">
             <div className="text-center mb-12 sm:mb-16">
                 <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Our Capabilities</h2>
                 <p className="text-muted-foreground mt-4">Expertise across all modern technology domains.</p>
@@ -305,7 +323,7 @@ export default function LandingPage() {
         </section>
 
         {/* 10. Portfolio (Compact Layout) */}
-        <section className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto">
+        <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto">
             <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-12 sm:mb-16 gap-6 text-center sm:text-left">
                 <div>
                     <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">Recent Work</h2>
@@ -343,7 +361,7 @@ export default function LandingPage() {
         </section>
 
         {/* 11. Testimonials */}
-        <section className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12 bg-muted/10 border-t border-border">
+        <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12 bg-muted/10 border-t border-border">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-center mb-12 sm:mb-16">What Students Say</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
                 {[
@@ -368,7 +386,7 @@ export default function LandingPage() {
         </section>
 
         {/* 12. Pricing */}
-        <section id="pricing" className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12 bg-muted/20 border-y border-border">
+        <section id="pricing" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12 bg-muted/20 border-y border-border">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-center mb-12 sm:mb-16">Simple Pricing</h2>
             <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
                 <div className="flex-1 w-full glass-card rounded-[32px] p-8 sm:p-10 relative">
@@ -401,7 +419,7 @@ export default function LandingPage() {
         </section>
 
         {/* 13. FAQ */}
-        <section id="faq" className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12 max-w-3xl mx-auto">
+        <section id="faq" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12 max-w-3xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-10 sm:mb-12 text-center">Frequently Asked</h2>
             <div className="space-y-4">
                 {[
@@ -428,7 +446,7 @@ export default function LandingPage() {
         </section>
 
         {/* 14. CTA Section */}
-        <section id="contact" className="py-[80px] sm:py-[120px] px-4 sm:px-6 lg:px-12">
+        <section id="contact" className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12">
             <div className="glass-card rounded-[32px] sm:rounded-[40px] overflow-hidden relative border border-border">
                 <img src={CTA_IMG} alt="Futuristic Dashboard" className="absolute inset-0 w-full h-full object-cover opacity-20 dark:opacity-40" />
                 <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
